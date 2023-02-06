@@ -1,3 +1,11 @@
+This project is licensed under the GNU General Public License 3 or higher.
+https://www.gnu.org/licenses/gpl-3.0.en.html
+https://www.gnu.org/licenses/gpl-3.0.de.html
+
+# Contributor code
+
+This project depends on [@gerhobbelt/gitignore-parser](https://www.npmjs.com/package/@gerhobbelt/gitignore-parser), a fork of [gitignore-parser](https://www.npmjs.com/package/gitignore-parser), licensed as follows:
+
 # Copyright 2014 codemix ltd.
 
 Licensed under the Apache License, Version 2.0 (the "License");
