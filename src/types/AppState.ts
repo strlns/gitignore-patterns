@@ -5,6 +5,7 @@ export type AppState = {
 
 interface IVirtualFileSystemNode {
   path: string;
+  children?: IVirtualFileSystemNode[];
 }
 
 export type VirtualFileSystemNode = File | Directory;
@@ -12,9 +13,10 @@ export type VirtualFileSystemNode = File | Directory;
 interface Directory extends IVirtualFileSystemNode {
   isDir: true;
   path: string;
+  children: IVirtualFileSystemNode[];
 }
 
 interface File extends IVirtualFileSystemNode {
-  isDir: true;
+  isDir: false;
   path: string;
 }

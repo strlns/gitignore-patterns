@@ -1,9 +1,0 @@
-{
-  "name": "gitignore-patterns",
-  "version": "0.0.1",
-  "description": "A quick web app to visualize .gitignore pattern syntax, using @gerhobbelt/gitignore-parser as its backend.",
-  "main": "index.js",
-  "scripts": {},
-  "author": "Moritz Rehbach",
-  "license": "SEE LICENSE IN LICENSE.md"
-}

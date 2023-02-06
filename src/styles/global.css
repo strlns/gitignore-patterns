@@ -1,0 +1,110 @@
+:root {
+  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+
+  color-scheme: light dark;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  --spacing: 1rem;
+
+  --screen-sm: 400px;
+  --screen-md: 800px;
+  --screen-lg: 1280px;
+
+  --color-dark-bg: #242424;
+  --color-dark-contrast: #f9f9f9;
+  --color-dark-text: rgba(255, 255, 255, 0.87);
+  --color-dark-link: #747bff;
+  --color-dark-link-hover: #535bf2;
+  --color-dark-button-bg: #383d9fb7;
+
+  --color-light-bg: #f9f9f9;
+  --color-light-contrast: #242424;
+  --color-light-text: #111;
+  --color-light-link: #646cff;
+  --color-light-link-hover: #535bf2;
+  --color-light-button-bg: #9196ffc0;
+
+  --color-bg: var(--color-dark-bg);
+  --color-text: var(--color-dark-text);
+  --color-contrast: var(--color-dark-contrast);
+  --color-link: var(--color-dark-link);
+  --color-link-hover: var(--color-dark-link-hover);
+  --color-button-bg: var(--color-dark-button-bg);
+
+  /*
+  I currently can't get custom media queries to work as soon as they use custom properties,
+  no matter if using postcss-preset-env, postcss-custom-media alone, configuring in vite.config.ts
+  or configuring in postcss.config.cjs. So this should be good enough for now.
+
+  @custom-media --sm (min-width: var(--screen-sm));
+  @custom-media --md (min-width: var(--screen-md));
+  @custom-media --lg (min-width: var(--screen-lg));
+  */
+  @custom-media --sm (min-width: 400px);
+  @custom-media --md (min-width: 800px);
+  @custom-media --lg (min-width: 1280px);
+
+  --screen: var(--sm);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-bg: var(--color-light-bg);
+    --color-text: var(--color-light-text);
+    --color-contrast: var(--color-light-contrast);
+    --color-link: var(--color-light-link);
+    --color-link-hover: var(--color-light-link-hover);
+    --color-button-bg: var(--color-light-button-bg);
+  }
+}
+
+@media (--md) {
+  :root {
+    --screen: var(--screen-md);
+  }
+}
+
+@media (--lg) {
+  :root {
+    --screen: var(--screen-lg);
+  }
+}
+
+#root {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  place-items: center;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+a {
+  font-weight: 500;
+  color: var(--color-link);
+  text-decoration: inherit;
+}
+
+a:hover,
+a:active {
+  color: var(--color-light-link-hover);
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}

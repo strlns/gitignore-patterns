@@ -1,61 +1,55 @@
-import { useState } from "react";
-import TextInput from "./components/TextInput";
-import "./styles/App.css";
+import { useReducer } from "react";
+import Button from "./components/Atoms/Button";
+import TextInput from "./components/Atoms/TextInput";
+import Container from "./components/Container";
+import SpacedList from "./components/SpacedList";
+import { appStateReducer, initialState } from "./data/AppStateReducer";
 
 function App() {
-  const [patterns, setPatterns] = useState([""]);
+  const [state, dispatch] = useReducer(appStateReducer, initialState);
 
-  const setPattern = (index: number, pattern: string) => {
-    setPatterns((patterns) => {
-      const newPatterns = [...patterns];
-      newPatterns[index] = pattern;
-      return newPatterns;
-    });
-  };
+  console.log(JSON.stringify(state));
 
-  const addPattern = () => {
-    setPatterns((patterns) => [...patterns, ""]);
-  };
-
-  const [files, setFiles] = useState([""]);
-
-  const setFile = (index: number, filename: string) => {
-    setFiles((files) => {
-      const newFiles = [...files];
-      newFiles[index] = filename;
-      return newFiles;
-    });
-  };
-
-  const addFile = () => {
-    setFiles((files) => [...files, ""]);
-  };
+  const { files, patterns } = state;
 
   return (
-    <div className="App">
+    <Container>
       <h1>.gitignore Pattern</h1>
-      <div style={{ display: "grid", gap: "1rem", gridAutoFlow: "row" }}>
+      <SpacedList>
         {patterns.map((pattern, index) => (
           <TextInput
             key={index}
             value={pattern}
-            onChange={(event) => setPattern(index, event.target.value)}
+            onChange={(event) =>
+              dispatch({
+                type: "changePattern",
+                payload: { index, pattern: event.target.value },
+              })
+            }
           />
         ))}
-      </div>
-      <button onClick={addPattern}>Add line to .gitignore</button>
+      </SpacedList>
+      <Button onClick={() => dispatch({ type: "addPattern" })}>
+        Add line to .gitignore
+      </Button>
       <h2>Your files</h2>
-      <div style={{ display: "grid", gap: "1rem", gridAutoFlow: "row" }}>
+      <SpacedList>
+        {/*Next up: decide between own implementation of tree UI or a pre-made lib.*/}
         {files.map((file, index) => (
           <TextInput
             key={index}
-            value={file}
-            onChange={(event) => setPattern(index, event.target.value)}
+            value={file.path}
+            onChange={(event) =>
+              dispatch({
+                type: "changePattern",
+                payload: { index, pattern: event.target.value },
+              })
+            }
           />
         ))}
-      </div>
-      <button onClick={addFile}>Add file</button>
-    </div>
+      </SpacedList>
+      <Button onClick={() => dispatch({ type: "addFile" })}>Add file</Button>
+    </Container>
   );
 }
 

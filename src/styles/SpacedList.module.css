@@ -1,0 +1,6 @@
+.spacedList {
+  --list-spacing: 0.75em;
+  display: grid;
+  grid-auto-flow: row;
+  gap: var(--list-spacing);
+}

@@ -1,16 +1,25 @@
 import { AppState } from "../types/AppState";
 
-const AppStateReducer = (state: AppState, action: Action): AppState => {
+export const initialState: AppState = {
+  files: [
+    {
+      path: "/",
+      children: [],
+    },
+  ],
+  patterns: [],
+};
+
+export const appStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case "addFile": {
+      const newFile = {
+        path: action.payload?.path ?? "",
+        isDir: false,
+      };
       return {
         ...state,
-        files: [
-          ...state.files,
-          {
-            path: action.payload.path,
-          },
-        ],
+        files: [...state.files, newFile],
       };
     }
     case "removeFile": {
@@ -40,8 +49,9 @@ const AppStateReducer = (state: AppState, action: Action): AppState => {
       }
     }
     case "addPattern": {
-      const newPatterns = [...state.patterns, action.payload.path];
-      return { ...state, patterns: newPatterns };
+      const newPattern = action.payload?.pattern ?? "";
+      const patterns = [...state.patterns, newPattern];
+      return { ...state, patterns };
     }
     case "removePattern": {
       const newPatterns = [...state.patterns];
@@ -65,7 +75,7 @@ const AppStateReducer = (state: AppState, action: Action): AppState => {
       ) {
         const index = Math.floor(action.payload.index);
         const fileToChange = structuredClone(state.files[index]);
-        fileToChange.path = action.payload.path;
+        fileToChange.pattern = action.payload.pattern;
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
@@ -79,12 +89,15 @@ const AppStateReducer = (state: AppState, action: Action): AppState => {
 };
 
 /*
-To do: handle directories.
+To do: handle directories properly, implement:
+ - creation of directory
+ - moving file from one directory into another directory
+ - deletion of file/directory
 */
-type Action =
+export type Action =
   | {
       type: "addFile";
-      payload: {
+      payload?: {
         path: string;
       };
     }
@@ -103,8 +116,8 @@ type Action =
     }
   | {
       type: "addPattern";
-      payload: {
-        path: string;
+      payload?: {
+        pattern: string;
       };
     }
   | {
@@ -117,6 +130,6 @@ type Action =
       type: "changePattern";
       payload: {
         index: number;
-        path: string;
+        pattern: string;
       };
     };
