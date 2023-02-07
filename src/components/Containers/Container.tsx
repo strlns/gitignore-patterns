@@ -1,4 +1,4 @@
-import classNames from "../styles/Container.module.css";
+import classNames from "../../styles/Container.module.css";
 import { ReactNode } from "react";
 import { clsx } from "clsx";
 

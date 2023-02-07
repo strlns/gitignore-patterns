@@ -9,11 +9,11 @@ Currently unfinished.
 
 Unrelated:
 
-This uses vite and its defaults to "create a Vite app".
-This means rollup under the hood.
+This uses Vite and its defaults to "create a Vite app".
+This also means using Rollup and ESBuild under the hood.
 
 This project also uses PostCSS, which still hasn't fully transitioned to ECMAScript modules yet.
 
 I like PostCSS, I don't like Rollup, all of that is irrelevant here.
 
-I like Vite, it's really easy to set ‚up.
+I like Vite, it's very easy to set up and works really well.

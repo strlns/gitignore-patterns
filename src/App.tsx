@@ -1,8 +1,8 @@
 import { useReducer } from "react";
 import Button from "./components/Atoms/Button";
 import TextInput from "./components/Atoms/TextInput";
-import Container from "./components/Container";
-import SpacedList from "./components/SpacedList";
+import Container from "./components/Containers/Container";
+import SpacedList from "./components/Containers/SpacedList";
 import { appStateReducer, initialState } from "./data/AppStateReducer";
 
 function App() {
@@ -23,7 +23,7 @@ function App() {
             onChange={(event) =>
               dispatch({
                 type: "changePattern",
-                payload: { index, pattern: event.target.value },
+                payload: { index, pattern: event.currentTarget.value },
               })
             }
           />
@@ -39,10 +39,11 @@ function App() {
           <TextInput
             key={index}
             value={file.path}
+            readOnly={file.readOnly}
             onChange={(event) =>
               dispatch({
                 type: "changePattern",
-                payload: { index, pattern: event.target.value },
+                payload: { index, pattern: event.currentTarget.value },
               })
             }
           />

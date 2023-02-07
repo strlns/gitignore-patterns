@@ -5,6 +5,7 @@ export const initialState: AppState = {
     {
       path: "/",
       children: [],
+      readOnly: true,
     },
   ],
   patterns: [],

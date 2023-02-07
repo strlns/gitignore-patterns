@@ -4,3 +4,15 @@
   grid-auto-flow: row;
   gap: var(--list-spacing);
 }
+
+.horizontal {
+  grid-auto-flow: column;
+}
+
+.spacedList.horizontal.flex {
+  display: flex;
+}
+
+.horizontal.flex > * {
+  flex-shrink: 0;
+}

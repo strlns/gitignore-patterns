@@ -21,16 +21,22 @@
   --color-dark-bg: #242424;
   --color-dark-contrast: #f9f9f9;
   --color-dark-text: rgba(255, 255, 255, 0.87);
-  --color-dark-link: #747bff;
-  --color-dark-link-hover: #535bf2;
-  --color-dark-button-bg: #383d9fb7;
+  --color-dark-link: #f13c2d;
+  --color-dark-link-hover: #ff1500;
+  --color-dark-button-bg: #a10a00;
+  --color-dark-button-text: #ffafaf;
+  --color-dark-outline: #ffafaf;
+  --color-dark-outline-focus: auto;
 
   --color-light-bg: #f9f9f9;
   --color-light-contrast: #242424;
   --color-light-text: #111;
-  --color-light-link: #646cff;
-  --color-light-link-hover: #535bf2;
-  --color-light-button-bg: #9196ffc0;
+  --color-light-link: #f13c2d;
+  --color-light-link-hover: #ff1500;
+  --color-light-button-bg: #a10a00;
+  --color-light-button-text: #fffaea;
+  --color-light-outline: #ffafaf;
+  --color-light-outline-focus: auto;
 
   --color-bg: var(--color-dark-bg);
   --color-text: var(--color-dark-text);
@@ -38,6 +44,9 @@
   --color-link: var(--color-dark-link);
   --color-link-hover: var(--color-dark-link-hover);
   --color-button-bg: var(--color-dark-button-bg);
+  --color-button-text: var(--color-dark-button-text);
+  --color-outline: var(--color-dark-outline);
+  --color-outline-focus: var(--color-dark-outline-focus);
 
   /*
   I currently can't get custom media queries to work as soon as they use custom properties,
@@ -55,6 +64,11 @@
   --screen: var(--sm);
 }
 
+*:focus-visible,
+*:focus {
+  outline: 0.25rem auto var(--color-outline-focus);
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     --color-bg: var(--color-light-bg);
@@ -63,6 +77,9 @@
     --color-link: var(--color-light-link);
     --color-link-hover: var(--color-light-link-hover);
     --color-button-bg: var(--color-light-button-bg);
+    --color-button-text: var(--color-light-button-text);
+    --color-outline: var(--color-light-outline);
+    --color-outline-focus: var(--color-light-outline-focus);
   }
 }
 
