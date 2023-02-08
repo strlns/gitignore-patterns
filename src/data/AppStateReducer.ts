@@ -52,18 +52,18 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "removeFile": {
       const newFiles = [...state.files];
-      if (action.payload.index < newFiles.length && action.payload.index > 0) {
+      if (action.payload.index < newFiles.length && action.payload.index >= 0) {
         newFiles.splice(Math.floor(action.payload.index), 1);
         return { ...state, files: newFiles };
       } else {
         throw new Error(
-          `Index of out bounds, cannot remove pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}`
         );
       }
     }
     case "changeFilePath": {
       const newFiles = [...state.files];
-      if (action.payload.index < newFiles.length && action.payload.index > 0) {
+      if (action.payload.index < newFiles.length && action.payload.index >= 0) {
         //structuredClone is just a fancy way of writing {...object} here, but maybe our
         //objects are going to be nested in the future - who knows!
         const index = Math.floor(action.payload.index);
@@ -74,7 +74,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         return { ...state, files: newFiles };
       } else {
         throw new Error(
-          `Index of out bounds, cannot change file with index  ${action.payload.index}`
+          `Index out of bounds, cannot change file with index  ${action.payload.index}`
         );
       }
     }
@@ -87,13 +87,13 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       const newPatterns = [...state.patterns];
       if (
         action.payload.index < newPatterns.length &&
-        action.payload.index > 0
+        action.payload.index >= 0
       ) {
         newPatterns.splice(Math.floor(action.payload.index), 1);
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
-          `Index of out bounds, cannot remove pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}`
         );
       }
     }
@@ -101,16 +101,14 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       const newPatterns = [...state.patterns];
       if (
         action.payload.index < newPatterns.length &&
-        action.payload.index > 0
+        action.payload.index >= 0
       ) {
         const index = Math.floor(action.payload.index);
-        const patternToChange = structuredClone(newPatterns[index]);
-        patternToChange.pattern = action.payload.pattern;
-        newPatterns[index] = patternToChange;
+        newPatterns[index] = action.payload.pattern;
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
-          `Index of out bounds, cannot change pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot change pattern with index  ${action.payload.index}`
         );
       }
     }
