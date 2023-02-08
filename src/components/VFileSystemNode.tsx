@@ -6,6 +6,7 @@ import iconClassNames from "../styles/Icon.module.css";
 import utilityClassNames from "../styles/Utilities.module.css";
 import { Action, MAX_VFS_DEPTH } from "../data/AppStateReducer";
 import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
+import { useEffect, useRef } from "react";
 
 type VFileSystemNodeProps = {
   node: IVirtualFileSystemNode;
@@ -23,6 +24,11 @@ const VFileSystemNode = ({
   onChange,
   dispatch,
 }: VFileSystemNodeProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [path]);
   return (
     <SpacedList
       direction={DIRECTIONS.Horizontal}
@@ -49,6 +55,7 @@ const VFileSystemNode = ({
       )}
       <TextInput
         value={path}
+        ref={inputRef}
         onChange={onChange}
         readOnly={readOnly}
         className={utilityClassNames.flexGrow1}

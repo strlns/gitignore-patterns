@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 
 type ButtonProps = {
-  children: ReactNode;
+  children?: ReactNode;
   square?: boolean;
   onClick?: React.MouseEventHandler;
 } & JSX.IntrinsicAttributes;

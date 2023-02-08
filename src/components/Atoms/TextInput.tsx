@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { forwardRef, useRef } from "react";
 import classNames from "../../styles/TextInput.module.css";
 import { ChangedValueHandler } from "../../types/ChangedValueHandler";
 
@@ -9,24 +10,30 @@ export type TextInputProps = {
   className?: React.HTMLAttributes<HTMLInputElement>["className"];
 } & Omit<React.HTMLAttributes<HTMLInputElement>, "onChange">;
 
-const TextInput = ({
-  value,
-  onChange,
-  readOnly = false,
-  className = "",
-  ...props
-}: TextInputProps) => {
-  return (
-    <input
-      type="text"
-      value={value ?? ""}
-      onChange={valueHandlerToEventHandler(onChange)}
-      readOnly={readOnly}
-      className={clsx(classNames.input, className)}
-      {...props}
-    />
-  );
-};
+const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+  (
+    {
+      value,
+      onChange,
+      readOnly = false,
+      className = "",
+      ...props
+    }: TextInputProps,
+    inputRef
+  ) => {
+    return (
+      <input
+        ref={inputRef}
+        type="text"
+        value={value ?? ""}
+        onChange={valueHandlerToEventHandler(onChange)}
+        readOnly={readOnly}
+        className={clsx(classNames.input, className)}
+        {...props}
+      />
+    );
+  }
+);
 
 export const valueHandlerToEventHandler = (
   handler?: ChangedValueHandler

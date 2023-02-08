@@ -1,10 +1,10 @@
 import { useReducer } from "react";
-import Button from "./components/Atoms/Button";
-import Container from "./components/Containers/Container";
-import SpacedList from "./components/Containers/SpacedList";
-import Pattern from "./components/Pattern";
-import VFileSystemNode from "./components/VFileSystemNode";
-import { appStateReducer, initialState } from "./data/AppStateReducer";
+import Button from "../components/Atoms/Button";
+import Container from "../components/Containers/Container";
+import SpacedList from "../components/Containers/SpacedList";
+import Pattern from "../components/Pattern";
+import VFileSystemNode from "../components/VFileSystemNode";
+import { appStateReducer, initialState } from "../data/AppStateReducer";
 
 function App() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
