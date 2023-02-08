@@ -1,9 +1,17 @@
 import { AppState } from "../types/AppState";
+import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
 
 export const initialState: AppState = {
   files: [
     {
       path: "/",
+      /**
+      @todo revise the structure here. currently, this array shall always only have one
+      member, the root path. Reason: I chose a nested tree structure for the VFS state.
+      We'll also have to validate that the user cannot create multiple root nodes,
+      but that should be easy by forbidding duplicates and pre-filling the root path.
+      @see {searchNodeByCriterion}
+      */
       children: [],
       readOnly: true,
     },
@@ -15,9 +23,28 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case "addFile": {
       const newFile = {
-        path: action.payload?.path ?? "",
+        path: action.payload?.path ?? "/file",
         isDir: false,
-      };
+      } as IVirtualFileSystemNode;
+
+      //This is currently absurdly expensive, but this is not built to deal with huge
+      //file system trees.
+      if (
+        searchNodeByCriterion((node) => node.path === newFile.path, state.files)
+      ) {
+        throw new Error("Duplicate paths are not allowed.");
+      }
+      if (newFile.path.includes("/")) {
+        //see comments in action type on why this is needed.
+        const parent = searchNodeByCriterion(
+          (node) =>
+            isPathDirectChildOfDirectory(
+              node.path,
+              action.payload?.parentPath as string
+            ),
+          state.files
+        );
+      }
       return {
         ...state,
         files: [...state.files, newFile],
@@ -40,8 +67,10 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         //structuredClone is just a fancy way of writing {...object} here, but maybe our
         //objects are going to be nested in the future - who knows!
         const index = Math.floor(action.payload.index);
-        const fileToChange = structuredClone(state.files[index]);
+        const fileToChange = structuredClone(newFiles[index]);
         fileToChange.path = action.payload.path;
+        newFiles[index] = fileToChange;
+
         return { ...state, files: newFiles };
       } else {
         throw new Error(
@@ -75,8 +104,9 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         action.payload.index > 0
       ) {
         const index = Math.floor(action.payload.index);
-        const fileToChange = structuredClone(state.files[index]);
-        fileToChange.pattern = action.payload.pattern;
+        const patternToChange = structuredClone(newPatterns[index]);
+        patternToChange.pattern = action.payload.pattern;
+        newPatterns[index] = patternToChange;
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
@@ -98,9 +128,7 @@ To do: handle directories properly, implement:
 export type Action =
   | {
       type: "addFile";
-      payload?: {
-        path: string;
-      };
+      payload?: AddFilePayload;
     }
   | {
       type: "removeFile";
@@ -134,3 +162,82 @@ export type Action =
         pattern: string;
       };
     };
+
+export const MAX_VFS_DEPTH = 1024;
+/**
+ * 
+  Searching the parent folder using DFS or BFS is not a problem for the expected
+  small amount of files in this app. Still, it's a symptom of the tree-structure that
+  I imagined as the source of truth for the UI.
+
+  In reality, file system records are not trees and in respect to .gitignore,
+  nothing other than the path is of any relevance, as the tree-structure is redundant
+  given a list of correct paths. 
+
+  Problem: This requires every directory path to have a trailing slash, this is exactly
+  what we want to normalize with the tree-approach and the isDir flag.
+ * 
+ */
+const searchNodeByCriterion = (
+  criterion: (node: IVirtualFileSystemNode) => boolean,
+  treeNodesInVFS: IVirtualFileSystemNode[],
+  iteration = 0
+): IVirtualFileSystemNode | undefined => {
+  console.log("iteration " + iteration, criterion.toString());
+  let node = treeNodesInVFS.find(criterion);
+  if (node) {
+    return node;
+  }
+  if (iteration < MAX_VFS_DEPTH) {
+    // const treesWithChildren = treeNodesInVFS.filter(
+    //   (node) => node.children && node.children.length
+    // );
+    /*
+    Replace recursion with iteration?
+    Probably not needed here but would be more robust. 
+    */
+
+    for (const treeNode of treeNodesInVFS) {
+      if (treeNode.children && treeNode.children.length) {
+        return searchNodeByCriterion(
+          criterion,
+          treeNode.children,
+          iteration + 1
+        );
+      }
+    }
+  } else {
+    return;
+  }
+};
+
+const isPathDirectChildOfDirectory = (
+  path: string,
+  potentialAncestor: string
+) => {
+  const matchEndOfPath = path.match(/\/[^/]+(?:\/?)$/);
+  if (matchEndOfPath?.length === 1) {
+    const lastPathSegment = matchEndOfPath[0];
+    if (path.replace(lastPathSegment, "") === potentialAncestor) {
+      return true;
+    }
+  }
+  return false;
+};
+
+type AddFilePayload = {
+  path: string;
+  /*
+  This requires a **search** to find the corresponding object reprenting the parent folder
+  in the VFS state tree. Maybe I should revise the nested tree object structure representing 
+  VFS state, too.
+  But: It is important for each operation to differentiate between files and directories,
+  and relying only on the trailing slash in FE would be harder to implement.
+  A flat array would more closely resemble a real file system and simplify some logic,
+  but an actual tree structure simplifies UI development.
+
+  Searching the parent folder using DFS or BFS is not a problem for the expected
+  small amount of files in this app.
+  */
+  parentPath?: string;
+};

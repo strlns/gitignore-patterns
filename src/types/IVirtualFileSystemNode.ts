@@ -5,7 +5,7 @@ export interface IVirtualFileSystemNode {
   readonly readOnly?: boolean;
 }
 
-export type VirtualFileSystemNode = File | Directory;
+type VirtualFileSystemNode = File | Directory;
 
 interface Directory extends IVirtualFileSystemNode {
   isDir: true;

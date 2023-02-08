@@ -20,3 +20,13 @@
 .button:focus-visible {
   outline-width: 0.5rem;
 }
+.square {
+  --size: 1em;
+  --spacing: 0;
+  padding: 0;
+  aspect-ratio: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--size);
+}

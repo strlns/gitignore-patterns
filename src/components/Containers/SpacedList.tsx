@@ -12,18 +12,25 @@ type Direction = typeof DIRECTIONS[keyof typeof DIRECTIONS];
 const SpacedList = ({
   children = <></>,
   direction = DIRECTIONS.Vertical,
+  isFlex = false,
 }: {
   children?: ReactNode;
   direction?: Direction;
+  isFlex?: boolean;
 }) => (
-  <div className={clsx(classNames.spacedList, directionClassName(direction))}>
+  <div
+    className={clsx(
+      classNames.spacedList,
+      classNamePartsFromProps(direction, isFlex)
+    )}
+  >
     {children}
   </div>
 );
 
-const directionClassName = (direction: Direction) => {
+const classNamePartsFromProps = (direction: Direction, isFlex = false) => {
   if (direction === DIRECTIONS.Horizontal) {
-    return classNames.horizontal;
+    return clsx(classNames.horizontal, isFlex && classNames.flex);
   }
   return null;
 };

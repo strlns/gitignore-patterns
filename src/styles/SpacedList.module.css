@@ -11,6 +11,7 @@
 
 .spacedList.horizontal.flex {
   display: flex;
+  width: 100%;
 }
 
 .horizontal.flex > * {

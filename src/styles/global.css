@@ -21,6 +21,7 @@
   --color-dark-bg: #242424;
   --color-dark-contrast: #f9f9f9;
   --color-dark-text: rgba(255, 255, 255, 0.87);
+  --color-dark-text-muted: rgba(255, 255, 255, 0.6);
   --color-dark-link: #f13c2d;
   --color-dark-link-hover: #ff1500;
   --color-dark-button-bg: #a10a00;
@@ -31,6 +32,7 @@
   --color-light-bg: #f9f9f9;
   --color-light-contrast: #242424;
   --color-light-text: #111;
+  --color-light-text-muted: #1119;
   --color-light-link: #f13c2d;
   --color-light-link-hover: #ff1500;
   --color-light-button-bg: #a10a00;
@@ -47,6 +49,7 @@
   --color-button-text: var(--color-dark-button-text);
   --color-outline: var(--color-dark-outline);
   --color-outline-focus: var(--color-dark-outline-focus);
+  --color-text-muted: var(--color-dark-text-muted);
 
   /*
   I currently can't get custom media queries to work as soon as they use custom properties,
@@ -73,6 +76,7 @@
   :root {
     --color-bg: var(--color-light-bg);
     --color-text: var(--color-light-text);
+    --color-text-muted: var(--color-light-text-muted);
     --color-contrast: var(--color-light-contrast);
     --color-link: var(--color-light-link);
     --color-link-hover: var(--color-light-link-hover);

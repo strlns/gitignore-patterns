@@ -1,25 +1,42 @@
+import clsx from "clsx";
+import classNames from "../../styles/TextInput.module.css";
+import { ChangedValueHandler } from "../../types/ChangedValueHandler";
+
 export type TextInputProps = {
   value: string | undefined;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: ChangedValueHandler;
   readOnly?: boolean;
-} & React.HTMLAttributes<HTMLInputElement>;
+  className?: React.HTMLAttributes<HTMLInputElement>["className"];
+} & Omit<React.HTMLAttributes<HTMLInputElement>, "onChange">;
 
 const TextInput = ({
   value,
   onChange,
   readOnly = false,
+  className = "",
   ...props
 }: TextInputProps) => {
-  const wrappedOnChange = readOnly ? onChange : () => void 0;
   return (
     <input
       type="text"
       value={value ?? ""}
-      onChange={onChange}
+      onChange={valueHandlerToEventHandler(onChange)}
       readOnly={readOnly}
+      className={clsx(classNames.input, className)}
       {...props}
     />
   );
+};
+
+export const valueHandlerToEventHandler = (
+  handler?: ChangedValueHandler
+): React.ChangeEventHandler<HTMLInputElement> => {
+  if (!handler) {
+    return () => void 0;
+  }
+  return (event) => {
+    handler(event.currentTarget.value);
+  };
 };
 
 export default TextInput;
