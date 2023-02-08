@@ -39,8 +39,7 @@ function App() {
         {files.map((file, index) => (
           <VFileSystemNode
             key={index}
-            path={file.path}
-            readOnly={file.readOnly}
+            node={file}
             onChange={(path) =>
               dispatch({
                 type: "changeFilePath",

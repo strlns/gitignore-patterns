@@ -5,11 +5,11 @@ export const initialState: AppState = {
   files: [
     {
       path: "/",
+      isDir: true, //see other comments. the "VFS" with a tree structure could be simpler.
       /**
-      @todo revise the structure here. currently, this array shall always only have one
-      member, the root path. Reason: I chose a nested tree structure for the VFS state.
-      We'll also have to validate that the user cannot create multiple root nodes,
-      but that should be easy by forbidding duplicates and pre-filling the root path.
+      @todo Maybe (!) revise the structure here. currently, this array shall always only have one
+      member, the root path. Reason: I chose a tree structure instead of a flat array of paths
+      for the VFS state.
       @see {searchNodeByCriterion}
       */
       children: [],

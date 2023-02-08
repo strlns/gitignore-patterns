@@ -1,6 +1,7 @@
 export interface IVirtualFileSystemNode {
   path: string;
   children?: IVirtualFileSystemNode[];
+  isDir: boolean;
   /*In this app, the user cannot remove the root directory of his virtual git repository.*/
   readonly readOnly?: boolean;
 }
@@ -8,7 +9,7 @@ export interface IVirtualFileSystemNode {
 type VirtualFileSystemNode = File | Directory;
 
 interface Directory extends IVirtualFileSystemNode {
-  isDir: true;
+  isDir: false;
   path: string;
   children: IVirtualFileSystemNode[];
 }
