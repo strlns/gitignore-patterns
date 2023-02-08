@@ -183,32 +183,21 @@ const searchNodeByCriterion = (
   treeNodesInVFS: IVirtualFileSystemNode[],
   iteration = 0
 ): IVirtualFileSystemNode | undefined => {
-  console.log("iteration " + iteration, criterion.toString());
   let node = treeNodesInVFS.find(criterion);
   if (node) {
     return node;
   }
   if (iteration < MAX_VFS_DEPTH) {
-    // const treesWithChildren = treeNodesInVFS.filter(
-    //   (node) => node.children && node.children.length
-    // );
-    /*
-    Replace recursion with iteration?
-    Probably not needed here but would be more robust. 
-    */
-
-    for (const treeNode of treeNodesInVFS) {
-      if (treeNode.children && treeNode.children.length) {
-        return searchNodeByCriterion(
-          criterion,
-          treeNode.children,
-          iteration + 1
-        );
-      }
+    const children = treeNodesInVFS
+      .filter((node) => node.children?.length)
+      .map((node) => node.children as IVirtualFileSystemNode[])
+      .flat();
+    node = searchNodeByCriterion(criterion, children, ++iteration);
+    if (node) {
+      return node;
     }
-  } else {
-    return;
   }
+  return node;
 };
 
 const isPathDirectChildOfDirectory = (
