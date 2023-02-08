@@ -1,10 +1,7 @@
 import { useReducer } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import Button from "./components/Atoms/Button";
-import TextInput from "./components/Atoms/TextInput";
 import Container from "./components/Containers/Container";
 import SpacedList from "./components/Containers/SpacedList";
-import ErrorBoundaryFallback from "./components/Error/ErrorBoundaryFallback";
 import Pattern from "./components/Pattern";
 import VFileSystemNode from "./components/VFileSystemNode";
 import { appStateReducer, initialState } from "./data/AppStateReducer";

@@ -1,5 +1,10 @@
 import { AppState } from "../types/AppState";
 import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
+import {
+  isPathDirectChildOfDirectory,
+  normalizeSlashesInPathNames,
+  numberOfSlashes,
+} from "./PathUtilities";
 
 export const initialState: AppState = {
   files: [
@@ -64,11 +69,54 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     case "changeFilePath": {
       const newFiles = [...state.files];
       if (action.payload.index < newFiles.length && action.payload.index >= 0) {
-        //structuredClone is just a fancy way of writing {...object} here, but maybe our
-        //objects are going to be nested in the future - who knows!
         const index = Math.floor(action.payload.index);
-        const fileToChange = structuredClone(newFiles[index]);
+
+        const fileToChange = structuredClone(
+          newFiles[index]
+        ) as IVirtualFileSystemNode;
+
         fileToChange.path = action.payload.path;
+
+        const [oldLevel, newLevel] = [
+          numberOfSlashes(action.payload.path),
+          numberOfSlashes(fileToChange.path),
+        ];
+
+        if (oldLevel !== newLevel) {
+          const parent = searchNodeByCriterion(
+            (node) => node.children?.includes(fileToChange) ?? false,
+            newFiles
+          );
+          if (parent) {
+            const index =
+              parent.children?.findIndex(
+                (file) => file.path === fileToChange.path
+              ) ?? -1;
+            index !== -1 && parent.children?.splice(index, 1);
+            let newParent = searchNodeByCriterion(
+              (node) =>
+                numberOfSlashes(node.path) ===
+                numberOfSlashes(fileToChange.path),
+              newFiles
+            );
+            if (!newParent) {
+              newParent = {
+                path: fileToChange.path.replace(/\/[^/]*$/, ""),
+                isDir: false,
+                children: [],
+              } as IVirtualFileSystemNode;
+              newParent.children?.push(fileToChange);
+              newFiles.push(newParent);
+            }
+          }
+        }
+
+        const newPath =
+          newLevel > 0 ? normalizeSlashesInPathNames(fileToChange.path) : "/";
+
+        fileToChange.path = newPath;
+        fileToChange.isDir = fileToChange.path.endsWith("/");
+
         newFiles[index] = fileToChange;
 
         return { ...state, files: newFiles };
@@ -196,20 +244,6 @@ const searchNodeByCriterion = (
     }
   }
   return node;
-};
-
-const isPathDirectChildOfDirectory = (
-  path: string,
-  potentialAncestor: string
-) => {
-  const matchEndOfPath = path.match(/\/[^/]+(?:\/?)$/);
-  if (matchEndOfPath?.length === 1) {
-    const lastPathSegment = matchEndOfPath[0];
-    if (path.replace(lastPathSegment, "") === potentialAncestor) {
-      return true;
-    }
-  }
-  return false;
 };
 
 type AddFilePayload = {
