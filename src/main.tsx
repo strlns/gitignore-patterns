@@ -15,9 +15,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ErrorBoundary
-      fallbackRender={(props) => <ErrorBoundaryFallback {...props} />}
-    >
+    <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
       <RouterProvider router={router} />
     </ErrorBoundary>
   </React.StrictMode>

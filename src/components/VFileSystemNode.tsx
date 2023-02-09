@@ -1,18 +1,18 @@
+import { useEffect, useRef } from "react";
+import { MAX_VFS_DEPTH } from "../data/AppStateReducer";
+import iconClassNames from "../styles/Icon.module.css";
+import utilityClassNames from "../styles/Utilities.module.css";
 import { ChangedValueHandler } from "../types/ChangedValueHandler";
+import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
 import Button from "./Atoms/Button";
 import TextInput from "./Atoms/TextInput";
 import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
-import iconClassNames from "../styles/Icon.module.css";
-import utilityClassNames from "../styles/Utilities.module.css";
-import { Action, MAX_VFS_DEPTH } from "../data/AppStateReducer";
-import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
-import { useEffect, useRef } from "react";
 
 type VFileSystemNodeProps = {
   node: IVirtualFileSystemNode;
   isIgnored?: boolean;
   onChange?: ChangedValueHandler;
-  dispatch: React.Dispatch<Action>;
+  onAddChild: (parentPath: string) => void;
   readOnly?: boolean;
 };
 
@@ -22,7 +22,7 @@ const VFileSystemNode = ({
   node: { path, isDir, readOnly },
   isIgnored,
   onChange,
-  dispatch,
+  onAddChild,
 }: VFileSystemNodeProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -61,16 +61,7 @@ const VFileSystemNode = ({
         className={utilityClassNames.flexGrow1}
       />
       {isDir && (
-        <Button
-          square
-          aria-label={label}
-          onClick={() =>
-            dispatch({
-              type: "addFile",
-              payload: { path: `${path}file`, parentPath: path },
-            })
-          }
-        >
+        <Button square aria-label={label} onClick={() => onAddChild(path)}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

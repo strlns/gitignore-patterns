@@ -1,12 +1,17 @@
 import { AppState } from "../types/AppState";
-import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
+import {
+  Directory,
+  IVirtualFileSystemNode,
+} from "../types/IVirtualFileSystemNode";
 import {
   isPathDirectChildOfDirectory,
-  normalizeSlashesInPathNames,
+  normalizePath,
+  normalizePathSeparators,
   numberOfSlashes,
 } from "./PathUtilities";
 
 export const initialState: AppState = {
+  error: undefined,
   files: [
     {
       path: "/",
@@ -17,38 +22,40 @@ export const initialState: AppState = {
       for the VFS state.
       @see {searchNodeByCriterion}
       */
-      children: [],
       readOnly: true,
     },
   ],
   patterns: [],
 };
 
+/*
+ * This is the single source of truth for state in this small app.
+ *
+ * Note that throwing an error here is problematic if the error should be user-facing
+ * and is not an exceptional application error.
+ *
+ * In this case, the "error" property should be used, as unfortunately I can't
+ * get React error boundaries to work with async dispatch calls, see
+ * https://reactjs.org/docs/error-boundaries.html#how-about-event-handlers
+ *
+ * For exceptional application errors, throwing is still the right thing to do.
+ */
 export const appStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case "addFile": {
+      const path = normalizePath(action.payload?.path ?? "/file");
       const newFile = {
-        path: action.payload?.path ?? "/file",
-        isDir: false,
+        path,
+        isDir: path.endsWith("/"),
       } as IVirtualFileSystemNode;
 
       //This is currently absurdly expensive, but this is not built to deal with huge
       //file system trees.
-      if (
-        searchNodeByCriterion((node) => node.path === newFile.path, state.files)
-      ) {
-        throw new Error("Duplicate paths are not allowed.");
-      }
-      if (newFile.path.includes("/")) {
-        //see comments in action type on why this is needed.
-        const parent = searchNodeByCriterion(
-          (node) =>
-            isPathDirectChildOfDirectory(
-              node.path,
-              action.payload?.parentPath as string
-            ),
-          state.files
-        );
+      if (state.files.find((file) => file.path === newFile.path)) {
+        return {
+          ...state,
+          error: new Error("Duplicate paths are not allowed."),
+        };
       }
       return {
         ...state,
@@ -62,7 +69,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         return { ...state, files: newFiles };
       } else {
         throw new Error(
-          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}.`
         );
       }
     }
@@ -70,59 +77,26 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       const newFiles = [...state.files];
       if (action.payload.index < newFiles.length && action.payload.index >= 0) {
         const index = Math.floor(action.payload.index);
+        // no deep clone needed here
+        const changedFile = { ...newFiles[index] };
+        changedFile.path = normalizePath(action.payload.path);
+        changedFile.isDir = changedFile.path.endsWith("/");
 
-        const fileToChange = structuredClone(
-          newFiles[index]
-        ) as IVirtualFileSystemNode;
-
-        fileToChange.path = action.payload.path;
-
-        const [oldLevel, newLevel] = [
-          numberOfSlashes(action.payload.path),
-          numberOfSlashes(fileToChange.path),
-        ];
-
-        if (oldLevel !== newLevel) {
-          const parent = searchNodeByCriterion(
-            (node) => node.children?.includes(fileToChange) ?? false,
-            newFiles
-          );
-          if (parent) {
-            const index =
-              parent.children?.findIndex(
-                (file) => file.path === fileToChange.path
-              ) ?? -1;
-            index !== -1 && parent.children?.splice(index, 1);
-            let newParent = searchNodeByCriterion(
-              (node) =>
-                numberOfSlashes(node.path) ===
-                numberOfSlashes(fileToChange.path),
-              newFiles
-            );
-            if (!newParent) {
-              newParent = {
-                path: fileToChange.path.replace(/\/[^/]*$/, ""),
-                isDir: false,
-                children: [],
-              } as IVirtualFileSystemNode;
-              newParent.children?.push(fileToChange);
-              newFiles.push(newParent);
-            }
-          }
+        //This is currently absurdly expensive, but this is not built to deal with huge
+        //file system trees.
+        if (state.files.find((file) => file.path === changedFile.path)) {
+          return {
+            ...state,
+            error: new Error("Duplicate paths are not allowed."),
+          };
         }
 
-        const newPath =
-          newLevel > 0 ? normalizeSlashesInPathNames(fileToChange.path) : "/";
-
-        fileToChange.path = newPath;
-        fileToChange.isDir = fileToChange.path.endsWith("/");
-
-        newFiles[index] = fileToChange;
+        newFiles[index] = changedFile;
 
         return { ...state, files: newFiles };
       } else {
         throw new Error(
-          `Index out of bounds, cannot change file with index  ${action.payload.index}`
+          `Index out of bounds, cannot change file with index  ${action.payload.index}.`
         );
       }
     }
@@ -141,7 +115,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
-          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}.`
         );
       }
     }
@@ -156,23 +130,31 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         return { ...state, patterns: newPatterns };
       } else {
         throw new Error(
-          `Index out of bounds, cannot change pattern with index  ${action.payload.index}`
+          `Index out of bounds, cannot change pattern with index  ${action.payload.index}.`
         );
       }
     }
+    case "error":
+      return { ...state, error: action.payload };
+    case "clearError":
+      return { ...state, error: undefined };
     default:
-      return state;
+      throw new Error("Invalid action.");
   }
 };
 
+export interface VFSTree {
+  node: IVirtualFileSystemNode;
+  children: VFSTree[];
+}
+
 /*
 To do: handle directories properly, implement:
- - creation of directory
- - moving file from one directory into another directory
- - deletion of file/directory
+- deletion of file/directory
 */
 export type Action =
   | {
+      //also covers directories. maybe rename action.
       type: "addFile";
       payload?: AddFilePayload;
     }
@@ -202,6 +184,13 @@ export type Action =
       };
     }
   | {
+      type: "error";
+      payload: string | Error;
+    }
+  | {
+      type: "clearError";
+    }
+  | {
       type: "changePattern";
       payload: {
         index: number;
@@ -210,41 +199,6 @@ export type Action =
     };
 
 export const MAX_VFS_DEPTH = 1024;
-/**
- * 
-  Searching the parent folder using DFS or BFS is not a problem for the expected
-  small amount of files in this app. Still, it's a symptom of the tree-structure that
-  I imagined as the source of truth for the UI.
-
-  In reality, file system records are not trees and in respect to .gitignore,
-  nothing other than the path is of any relevance, as the tree-structure is redundant
-  given a list of correct paths. 
-
-  Problem: This requires every directory path to have a trailing slash, this is exactly
-  what we want to normalize with the tree-approach and the isDir flag.
- * 
- */
-const searchNodeByCriterion = (
-  criterion: (node: IVirtualFileSystemNode) => boolean,
-  treeNodesInVFS: IVirtualFileSystemNode[],
-  iteration = 0
-): IVirtualFileSystemNode | undefined => {
-  let node = treeNodesInVFS.find(criterion);
-  if (node) {
-    return node;
-  }
-  if (iteration < MAX_VFS_DEPTH) {
-    const children = treeNodesInVFS
-      .filter((node) => node.children?.length)
-      .map((node) => node.children as IVirtualFileSystemNode[])
-      .flat();
-    node = searchNodeByCriterion(criterion, children, ++iteration);
-    if (node) {
-      return node;
-    }
-  }
-  return node;
-};
 
 type AddFilePayload = {
   path: string;
