@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { forwardRef, useRef } from "react";
-import classNames from "../../styles/TextInput.module.css";
-import { ChangedValueHandler } from "../../types/ChangedValueHandler";
+import { forwardRef } from "react";
+import classNames from "styles/TextInput.module.css";
+import { ChangedValueHandler } from "types/ChangedValueHandler";
 
 export type TextInputProps = {
   value: string | undefined;

@@ -1,6 +1,6 @@
 import { useRouteError } from "react-router";
-import Container from "../Containers/Container";
-import SpacedList from "../Containers/SpacedList";
+import Container from "components/Containers/Container";
+import SpacedList from "components/Containers/SpacedList";
 
 export default function RouteError() {
   const error = useRouteError();

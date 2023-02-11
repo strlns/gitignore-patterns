@@ -1,5 +1,5 @@
-import Button from "../Atoms/Button";
-import Container from "../Containers/Container";
+import Button from "components/Atoms/Button";
+import Container from "components/Containers/Container";
 
 type WarningProps = {
   error: Error | string;

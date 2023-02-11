@@ -1,7 +1,7 @@
 import { FallbackProps } from "react-error-boundary";
-import Button from "../Atoms/Button";
-import Container from "../Containers/Container";
-import SpacedList from "../Containers/SpacedList";
+import Button from "components/Atoms/Button";
+import Container from "components/Containers/Container";
+import SpacedList from "components/Containers/SpacedList";
 
 export default function ({ error, resetErrorBoundary }: FallbackProps) {
   console.error("Error caught by error boundary:", error);

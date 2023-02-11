@@ -1,4 +1,4 @@
-import { Action } from "../data/AppStateReducer";
+import { Action } from "data/AppStateReducer";
 import Button from "./Atoms/Button";
 import SpacedList from "./Containers/SpacedList";
 import Pattern from "./Pattern";

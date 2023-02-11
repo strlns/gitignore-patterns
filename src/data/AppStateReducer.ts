@@ -1,14 +1,6 @@
-import { AppState } from "../types/AppState";
-import {
-  Directory,
-  IVirtualFileSystemNode,
-} from "../types/IVirtualFileSystemNode";
-import {
-  isPathDirectChildOfDirectory,
-  normalizePath,
-  normalizePathSeparators,
-  numberOfSlashes,
-} from "./PathUtilities";
+import { AppState } from "types/AppState";
+import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import { normalizePath } from "data/PathUtilities";
 
 export const initialState: AppState = {
   error: undefined,
@@ -48,10 +40,10 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         path,
         isDir: path.endsWith("/"),
       } as IVirtualFileSystemNode;
-
       //This is currently absurdly expensive, but this is not built to deal with huge
       //file system trees.
-      if (state.files.find((file) => file.path === newFile.path)) {
+      const duplicate = state.files.find((file) => file.path === newFile.path);
+      if (duplicate) {
         return {
           ...state,
           error: new Error("Duplicate paths are not allowed."),
@@ -81,19 +73,8 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         const changedFile = { ...newFiles[index] };
         changedFile.path = normalizePath(action.payload.path);
         changedFile.isDir = changedFile.path.endsWith("/");
-
-        //This is currently absurdly expensive, but this is not built to deal with huge
-        //file system trees.
-        if (state.files.find((file) => file.path === changedFile.path)) {
-          return {
-            ...state,
-            error: new Error("Duplicate paths are not allowed."),
-          };
-        }
-
         newFiles[index] = changedFile;
-
-        return { ...state, files: newFiles };
+        return detectAndHighlightDuplicates({ ...state, files: newFiles });
       } else {
         throw new Error(
           `Index out of bounds, cannot change file with index  ${action.payload.index}.`
@@ -215,4 +196,29 @@ type AddFilePayload = {
   small amount of files in this app.
   */
   parentPath?: string;
+};
+
+const detectAndHighlightDuplicates = (state: AppState): AppState => {
+  const filesByPath = new Map<string, IVirtualFileSystemNode[]>();
+  let hasChanges = false;
+  const files = [...state.files];
+  for (const file of state.files) {
+    const filesWithPath = filesByPath.get(file.path) ?? [];
+    filesWithPath.push(file);
+    if (filesWithPath.length > 1) {
+      filesWithPath.forEach((file, index) => {
+        const markAsDuplicate = index > 0;
+        if (markAsDuplicate !== Boolean(file.duplicate)) {
+          file = { ...file, duplicate: markAsDuplicate };
+          hasChanges = true;
+        }
+      });
+    } else if (file.duplicate) {
+      file.duplicate = false;
+    }
+  }
+  if (hasChanges) {
+    return { ...state, files };
+  }
+  return state;
 };

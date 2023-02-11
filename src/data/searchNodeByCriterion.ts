@@ -1,5 +1,5 @@
-import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
-import { VFSTree, MAX_VFS_DEPTH } from "./AppStateReducer";
+import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import { VFSTree, MAX_VFS_DEPTH } from "data/AppStateReducer";
 
 /**
  * Absurdly expensive and hopefully not needed too often.

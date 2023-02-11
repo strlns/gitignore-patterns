@@ -1,10 +1,10 @@
 import { useMemo, useReducer } from "react";
-import Container from "../components/Containers/Container";
-import Warning from "../components/Error/Warning";
-import PatternEditor from "../components/PatternEditor";
-import VFileSystemEditor from "../components/VFileSystemEditor";
-import { appStateReducer, initialState } from "../data/AppStateReducer";
-import { getTreeFromVFSNodes } from "../data/getTreeFromVFSNodes";
+import Container from "components/Containers/Container";
+import Warning from "components/Error/Warning";
+import PatternEditor from "components/PatternEditor";
+import VFileSystemEditor from "components/VFileSystemEditor";
+import { appStateReducer, initialState } from "data/AppStateReducer";
+import { getTreeFromVFSNodes } from "data/getTreeFromVFSNodes";
 
 function App() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);

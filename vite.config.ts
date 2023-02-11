@@ -1,13 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-// import postcssPresetEnvPlugin from "postcss-preset-env";
+import postcssPresetEnvPlugin from "postcss-preset-env";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  // css: {
-  //   postcss: {
-  //     plugins: [postcssPresetEnvPlugin()],
-  //   },
-  // },
+  plugins: [react(), tsconfigPaths()],
+  css: {
+    postcss: {
+      plugins: [postcssPresetEnvPlugin()],
+    },
+  },
 });

@@ -1,4 +1,4 @@
-import classNames from "../../styles/Button.module.css";
+import classNames from "styles/Button.module.css";
 import { ReactNode } from "react";
 import clsx from "clsx";
 

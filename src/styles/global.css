@@ -19,8 +19,10 @@
   --screen-lg: 1280px;
 
   --color-dark-bg: #242424;
+  --color-dark-bg-slate: rgba(150, 150, 150, 0.75);
   --color-dark-contrast: #f9f9f9;
   --color-dark-text: rgba(255, 255, 255, 0.87);
+  --color-dark-text-muted: rgba(255, 255, 255, 0.6);
   --color-dark-text-muted: rgba(255, 255, 255, 0.6);
   --color-dark-link: #f13c2d;
   --color-dark-link-hover: #ff1500;
@@ -30,9 +32,10 @@
   --color-dark-outline-focus: auto;
 
   --color-light-bg: #f9f9f9;
+  --color-light-bg-slate: rgba(150, 150, 150, 0.75);
   --color-light-contrast: #242424;
   --color-light-text: #111;
-  --color-light-text-muted: #1119;
+  --color-light-text-muted: rgba(50, 50, 50, 0.6);
   --color-light-link: #f13c2d;
   --color-light-link-hover: #ff1500;
   --color-light-button-bg: #a10a00;
@@ -41,6 +44,7 @@
   --color-light-outline-focus: auto;
 
   --color-bg: var(--color-dark-bg);
+  --color-bg-slate: var(--color-dark-slate);
   --color-text: var(--color-dark-text);
   --color-contrast: var(--color-dark-contrast);
   --color-link: var(--color-dark-link);
@@ -75,6 +79,7 @@
 @media (prefers-color-scheme: light) {
   :root {
     --color-bg: var(--color-light-bg);
+    --color-bg-slate: var(--color-light-bg-slate);
     --color-text: var(--color-light-text);
     --color-text-muted: var(--color-light-text-muted);
     --color-contrast: var(--color-light-contrast);

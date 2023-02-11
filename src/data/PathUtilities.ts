@@ -1,3 +1,5 @@
+import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+
 export const isPathDirectChildOfDirectory = (
   path: string,
   potentialParentPath: string
@@ -52,4 +54,17 @@ export const getPathName = (path: string): string => {
 };
 
 export const normalizePath = (path: string): string =>
-  normalizePathSeparators(path.trim());
+  ensureLeadingSlash(normalizePathSeparators(path.trim()));
+
+type GetAvailableChildPathOptions = {
+  basename: string;
+  parentPath: string;
+  files: IVirtualFileSystemNode[];
+  maxIterations: number;
+};
+
+export const getAvailableFileBasenameInDirectory = ({
+  basename = "file",
+  files,
+  maxIterations = 100,
+}: GetAvailableChildPathOptions) => {};

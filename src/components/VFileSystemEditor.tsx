@@ -1,5 +1,5 @@
-import { Action } from "../data/AppStateReducer";
-import { getChildPath } from "../data/PathUtilities";
+import { Action } from "data/AppStateReducer";
+import { getChildPath } from "data/PathUtilities";
 import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
 import Button from "./Atoms/Button";
 import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
@@ -18,16 +18,11 @@ const VFileSystemEditor = ({ files, dispatch }: VFileSystemEditorProps) => {
           <VFileSystemNode
             key={index}
             node={file}
+            dispatch={dispatch}
             onChange={(path) =>
               dispatch({
                 type: "changeFilePath",
                 payload: { index, path },
-              })
-            }
-            onAddChild={(parentPath) =>
-              dispatch({
-                type: "addFile",
-                payload: { path: getChildPath("file", parentPath), parentPath },
               })
             }
           />

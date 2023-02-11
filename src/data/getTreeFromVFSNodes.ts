@@ -1,5 +1,5 @@
-import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
-import { getPathName, numberOfSlashes } from "./PathUtilities";
+import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import { getPathName, numberOfSlashes } from "data/PathUtilities";
 
 //This is currently absurdly expensive, but this app is not built to deal with huge
 //file system trees.
