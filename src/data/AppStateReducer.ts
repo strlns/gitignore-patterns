@@ -1,22 +1,24 @@
+import {
+  getPathName,
+  getUniquePath,
+  isPathDirectChildOfDirectory,
+  normalizePath,
+  PATH_SEPARATOR,
+} from "data/PathUtilities";
 import { AppState } from "types/AppState";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { normalizePath } from "data/PathUtilities";
+import { PartialBy } from "types/UtilityTypes";
+
+export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
+  path: PATH_SEPARATOR,
+  isDir: true,
+  readOnly: true,
+  id: 0,
+};
 
 export const initialState: AppState = {
   error: undefined,
-  files: [
-    {
-      path: "/",
-      isDir: true, //see other comments. the "VFS" with a tree structure could be simpler.
-      /**
-      @todo Maybe (!) revise the structure here. currently, this array shall always only have one
-      member, the root path. Reason: I chose a tree structure instead of a flat array of paths
-      for the VFS state.
-      @see {searchNodeByCriterion}
-      */
-      readOnly: true,
-    },
-  ],
+  files: [structuredClone(ROOT_VFS_NODE)],
   patterns: [],
 };
 
@@ -35,50 +37,43 @@ export const initialState: AppState = {
 export const appStateReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case "addFile": {
-      const path = normalizePath(action.payload?.path ?? "/file");
-      const newFile = {
-        path,
-        isDir: path.endsWith("/"),
-      } as IVirtualFileSystemNode;
-      //This is currently absurdly expensive, but this is not built to deal with huge
-      //file system trees.
-      const duplicate = state.files.find((file) => file.path === newFile.path);
-      if (duplicate) {
-        return {
-          ...state,
-          error: new Error("Duplicate paths are not allowed."),
-        };
-      }
-      return {
-        ...state,
-        files: [...state.files, newFile],
-      };
+      const path = normalizePath(action.payload?.path ?? `${ROOT_VFS_NODE.path}file`);
+      return createNewFileAction(state, path);
     }
     case "removeFile": {
       const newFiles = [...state.files];
-      if (action.payload.index < newFiles.length && action.payload.index >= 0) {
-        newFiles.splice(Math.floor(action.payload.index), 1);
+      //This leads to a lot of wasted work, but working with the indexes directly
+      //makes writing the app complicated and hard to debug or test.
+      //Also a symptom of the mismatch between tree structure and flat VFSNode array
+      //(and my lack of ability to do this correct and efficient at the same time.)
+      const indexOfFileToRemove = state.files.findIndex(
+        (file) => file.id === action.payload.id
+      );
+      if (indexOfFileToRemove !== -1) {
+        newFiles.splice(indexOfFileToRemove);
         return { ...state, files: newFiles };
       } else {
-        throw new Error(
-          `Index out of bounds, cannot remove pattern with index  ${action.payload.index}.`
-        );
+        throw new Error(`Cannot remove file with ID  ${action.payload.id}.`);
       }
     }
     case "changeFilePath": {
       const newFiles = [...state.files];
-      if (action.payload.index < newFiles.length && action.payload.index >= 0) {
-        const index = Math.floor(action.payload.index);
+      //This leads to a lot of wasted work, but working with the indexes directly
+      //makes writing the app complicated and hard to debug or test.
+      //Also a symptom of the mismatch between tree structure and flat VFSNode array
+      //(and my lack of ability to do this correct and efficient at the same time.)
+      const indexOfFileToChange = state.files.findIndex(
+        (file) => file.id === action.payload.id
+      );
+      if (indexOfFileToChange !== -1) {
         // no deep clone needed here
-        const changedFile = { ...newFiles[index] };
+        const changedFile = { ...newFiles[indexOfFileToChange] };
         changedFile.path = normalizePath(action.payload.path);
-        changedFile.isDir = changedFile.path.endsWith("/");
-        newFiles[index] = changedFile;
-        return detectAndHighlightDuplicates({ ...state, files: newFiles });
+        changedFile.isDir = changedFile.path.endsWith(PATH_SEPARATOR);
+        newFiles[indexOfFileToChange] = changedFile;
+        return { ...state, files: newFiles };
       } else {
-        throw new Error(
-          `Index out of bounds, cannot change file with index  ${action.payload.index}.`
-        );
+        throw new Error(`Cannot change file with ID  ${action.payload.id}.`);
       }
     }
     case "addPattern": {
@@ -88,10 +83,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "removePattern": {
       const newPatterns = [...state.patterns];
-      if (
-        action.payload.index < newPatterns.length &&
-        action.payload.index >= 0
-      ) {
+      if (action.payload.index < newPatterns.length && action.payload.index >= 0) {
         newPatterns.splice(Math.floor(action.payload.index), 1);
         return { ...state, patterns: newPatterns };
       } else {
@@ -102,10 +94,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "changePattern": {
       const newPatterns = [...state.patterns];
-      if (
-        action.payload.index < newPatterns.length &&
-        action.payload.index >= 0
-      ) {
+      if (action.payload.index < newPatterns.length && action.payload.index >= 0) {
         const index = Math.floor(action.payload.index);
         newPatterns[index] = action.payload.pattern;
         return { ...state, patterns: newPatterns };
@@ -124,11 +113,6 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
   }
 };
 
-export interface VFSTree {
-  node: IVirtualFileSystemNode;
-  children: VFSTree[];
-}
-
 /*
 To do: handle directories properly, implement:
 - deletion of file/directory
@@ -137,18 +121,20 @@ export type Action =
   | {
       //also covers directories. maybe rename action.
       type: "addFile";
-      payload?: AddFilePayload;
+      payload?: {
+        path: string;
+      };
     }
   | {
       type: "removeFile";
       payload: {
-        index: number;
+        id: number;
       };
     }
   | {
       type: "changeFilePath";
       payload: {
-        index: number;
+        id: number;
         path: string;
       };
     }
@@ -181,23 +167,6 @@ export type Action =
 
 export const MAX_VFS_DEPTH = 1024;
 
-type AddFilePayload = {
-  path: string;
-  /*
-  This requires a **search** to find the corresponding object reprenting the parent folder
-  in the VFS state tree. Maybe I should revise the nested tree object structure representing 
-  VFS state, too.
-  But: It is important for each operation to differentiate between files and directories,
-  and relying only on the trailing slash in FE would be harder to implement.
-  A flat array would more closely resemble a real file system and simplify some logic,
-  but an actual tree structure simplifies UI development.
-
-  Searching the parent folder using DFS or BFS is not a problem for the expected
-  small amount of files in this app.
-  */
-  parentPath?: string;
-};
-
 const detectAndHighlightDuplicates = (state: AppState): AppState => {
   const filesByPath = new Map<string, IVirtualFileSystemNode[]>();
   let hasChanges = false;
@@ -221,4 +190,45 @@ const detectAndHighlightDuplicates = (state: AppState): AppState => {
     return { ...state, files };
   }
   return state;
+};
+
+const createNewFileAction = (
+  state: AppState,
+  path: string,
+  renameDuplicates = true
+): AppState => {
+  const newFileWithoutID = {
+    path,
+    isDir: path.endsWith(PATH_SEPARATOR),
+  } as PartialBy<IVirtualFileSystemNode, "id">;
+
+  const duplicate = state.files.find(
+    (file) => normalizePath(file.path) === normalizePath(newFileWithoutID.path)
+  );
+
+  if (duplicate) {
+    const pathName = getPathName(path);
+    const siblings = state.files.filter((file) =>
+      isPathDirectChildOfDirectory(file.path, pathName)
+    );
+    if (renameDuplicates) {
+      const newPath = getUniquePath(path, siblings);
+      if (newPath && newPath !== duplicate.path) {
+        createNewFileAction({ ...state, files: siblings }, newPath);
+      }
+      return {
+        ...state,
+        error: new Error("Duplicate paths are not allowed."),
+      };
+    }
+  }
+
+  const newFiles = [...state.files];
+  const newFile = { ...newFileWithoutID, id: state.files.length };
+  newFiles.push(newFile);
+
+  return {
+    ...state,
+    files: newFiles,
+  };
 };

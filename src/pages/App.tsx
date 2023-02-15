@@ -4,35 +4,28 @@ import Warning from "components/Error/Warning";
 import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
-import { getTreeFromVFSNodes } from "data/getTreeFromVFSNodes";
+import { getTreeFromVFSNodes } from "data/VFSTreeFromNodes";
 
 function App() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
 
-  const tree = useMemo(() => getTreeFromVFSNodes(state.files), [state.files]);
+  // const tree = useMemo(() => {
+  //   return getTreeFromVFSNodes(state.files);
+  // }, [state.files]);
 
-  const sortedFiles = useMemo(() => {
-    const result = [];
-    for (const [_parentPath, vfsNode] of tree.entries()) {
-      result.push(vfsNode);
-    }
-    return result.flat();
-  }, [tree]);
+  const tree = getTreeFromVFSNodes(state.files);
 
-  const { files, patterns, error } = state;
+  const { patterns, error } = state;
 
   return (
-    <Container>
+    <Container size="lg">
       <h1>.gitignore Pattern</h1>
       {error && (
-        <Warning
-          error={error}
-          onClear={() => dispatch({ type: "clearError" })}
-        />
+        <Warning error={error} onClear={() => dispatch({ type: "clearError" })} />
       )}
       <PatternEditor patterns={patterns} dispatch={dispatch} />
       <h2>Your files</h2>
-      <VFileSystemEditor files={sortedFiles} dispatch={dispatch} />
+      <VFileSystemEditor tree={tree} dispatch={dispatch} />
     </Container>
   );
 }

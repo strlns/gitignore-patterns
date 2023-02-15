@@ -3,7 +3,7 @@ import Button from "components/Atoms/Button";
 import Container from "components/Containers/Container";
 import SpacedList from "components/Containers/SpacedList";
 
-export default function ({ error, resetErrorBoundary }: FallbackProps) {
+const errorBoundaryFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   console.error("Error caught by error boundary:", error);
   return (
     <Container>
@@ -11,9 +11,11 @@ export default function ({ error, resetErrorBoundary }: FallbackProps) {
         <h2>Error</h2>
         <p>{JSON.stringify(error)}</p>
         <Button onClick={() => resetErrorBoundary()}>
-          OK, let's carry on anyway!
+          OK, let&apos;s carry on anyway!
         </Button>
       </SpacedList>
     </Container>
   );
-}
+};
+
+export default errorBoundaryFallback;

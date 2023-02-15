@@ -1,6 +1,5 @@
-import { getChildPath } from "data/PathUtilities";
 import { useEffect, useRef } from "react";
-import { Action, MAX_VFS_DEPTH } from "../data/AppStateReducer";
+import { Action } from "../data/AppStateReducer";
 import iconClassNames from "../styles/Icon.module.css";
 import utilityClassNames from "../styles/Utilities.module.css";
 import { ChangedValueHandler } from "../types/ChangedValueHandler";
@@ -13,29 +12,29 @@ import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
 
 type VFileSystemNodeProps = {
   node: IVirtualFileSystemNode;
+  indentLevel: number;
   isIgnored?: boolean;
   dispatch: React.Dispatch<Action>;
   onChange?: ChangedValueHandler;
 };
 
-const label = "Add file";
-
 const VFileSystemNode = ({
   node: { path, isDir, readOnly, duplicate: isDuplicate = false },
   isIgnored,
+  indentLevel,
   onChange,
   dispatch,
 }: VFileSystemNodeProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     inputRef.current?.focus();
   }, [path]);
+
   return (
     <SpacedList
       direction={DIRECTIONS.Horizontal}
       isFlex={true}
-      style={getInlineStyleSpacingFromTreeLevel(path)}
+      style={getInlineStyleSpacingFromTreeLevel(indentLevel)}
     >
       {isDir ? <FolderIcon /> : <span className={iconClassNames.icon}></span>}
       <TextInput
@@ -49,12 +48,11 @@ const VFileSystemNode = ({
       {isDir && !isDuplicate && (
         <Button
           square
-          aria-label={label}
           onClick={() =>
             dispatch({
               type: "addFile",
               payload: {
-                path: getChildPath("file", path),
+                path: `${path}/file`,
               },
             })
           }
@@ -66,16 +64,9 @@ const VFileSystemNode = ({
   );
 };
 
-const getInlineStyleSpacingFromTreeLevel = (
-  path: string
-): React.CSSProperties => {
-  const slashMatches = path.match(/\//g);
-  const level = Math.floor(
-    Math.max(0, Math.min(slashMatches?.length ?? 0, MAX_VFS_DEPTH))
-  );
-  return {
-    marginLeft: `${(level - 1) * 2}rem`,
-  };
-};
+//sshhh...
+const getInlineStyleSpacingFromTreeLevel = (level: number): React.CSSProperties => ({
+  marginLeft: `${(level - 1) * 2}rem`,
+});
 
 export default VFileSystemNode;

@@ -4,6 +4,7 @@ export interface IVirtualFileSystemNode {
   /*In this app, the user cannot remove the root directory of his virtual git repository.*/
   readonly readOnly?: boolean; //treated as false by default
   duplicate?: boolean; //treated as false by default
+  id: number; //auto-incremented node ID
 }
 
 export interface Directory extends IVirtualFileSystemNode {

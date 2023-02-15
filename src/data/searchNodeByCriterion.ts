@@ -1,13 +1,14 @@
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { VFSTree, MAX_VFS_DEPTH } from "data/AppStateReducer";
+import { MAX_VFS_DEPTH } from "data/AppStateReducer";
+import { VFSTreeNode } from "./VFSTreeNode";
 
 /**
- * Absurdly expensive and hopefully not needed too often.
+ * Expensive and hopefully not needed too often.
  * Uses BFS with recursion...
  */
-const searchNodeByCriterion = (
+export const searchNodeByCriterion = (
   criterion: (node: IVirtualFileSystemNode) => boolean,
-  trees: VFSTree[],
+  trees: VFSTreeNode[],
   iteration = 0
 ): IVirtualFileSystemNode | undefined => {
   for (const tree of trees) {

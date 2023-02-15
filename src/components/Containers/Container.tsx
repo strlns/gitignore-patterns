@@ -16,16 +16,8 @@ const Container = ({
   size = "lg",
 }: ContainerProps) => {
   const HTMLElementTagName = tagName;
-  const mergedClassName = clsx(
-    classNames.container,
-    classNames[size],
-    className
-  );
-  return (
-    <HTMLElementTagName className={mergedClassName}>
-      {children}
-    </HTMLElementTagName>
-  );
+  const mergedClassName = clsx(classNames.container, classNames[size], className);
+  return <HTMLElementTagName className={mergedClassName}>{children}</HTMLElementTagName>;
 };
 
 export default Container;

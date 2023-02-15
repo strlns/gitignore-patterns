@@ -12,13 +12,7 @@ export type TextInputProps = {
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   (
-    {
-      value,
-      onChange,
-      readOnly = false,
-      className = "",
-      ...props
-    }: TextInputProps,
+    { value, onChange, readOnly = false, className = "", ...props }: TextInputProps,
     inputRef
   ) => {
     return (
@@ -45,5 +39,7 @@ export const valueHandlerToEventHandler = (
     handler(event.currentTarget.value);
   };
 };
+
+TextInput.displayName = "TextInput";
 
 export default TextInput;

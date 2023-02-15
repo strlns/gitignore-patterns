@@ -7,10 +7,7 @@ type VFileSystemNodeActionProps = {
   node: IVirtualFileSystemNode;
 };
 
-const VFileSystemNodeActions = ({
-  node,
-  onAddChild,
-}: VFileSystemNodeActionProps) => {
+const VFileSystemNodeActions = ({ node, onAddChild }: VFileSystemNodeActionProps) => {
   return node.isDir && !node.duplicate ? (
     <Button square onClick={() => onAddChild(node.path)}>
       <PlusIcon title="Add child" />

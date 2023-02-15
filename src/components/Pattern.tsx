@@ -8,11 +8,7 @@ type PatternLineProps = {
   onChange?: ChangedValueHandler;
 };
 
-const Pattern = ({
-  pattern,
-  isValidSyntax = true,
-  onChange,
-}: PatternLineProps) => {
+const Pattern = ({ pattern, isValidSyntax = true, onChange }: PatternLineProps) => {
   return (
     <SpacedList direction={DIRECTIONS.Horizontal}>
       <TextInput value={pattern} onChange={onChange} />

@@ -7,7 +7,7 @@ export const DIRECTIONS = {
   Horizontal: 1,
 } as const;
 
-type Direction = typeof DIRECTIONS[keyof typeof DIRECTIONS];
+type Direction = (typeof DIRECTIONS)[keyof typeof DIRECTIONS];
 
 type SpacedListProps = {
   children?: ReactNode;
@@ -22,10 +22,7 @@ const SpacedList = ({
   ...attributes
 }: SpacedListProps) => (
   <div
-    className={clsx(
-      classNames.spacedList,
-      classNamePartsFromProps(direction, isFlex)
-    )}
+    className={clsx(classNames.spacedList, classNamePartsFromProps(direction, isFlex))}
     {...attributes}
   >
     {children}
