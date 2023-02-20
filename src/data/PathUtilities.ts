@@ -1,5 +1,4 @@
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { VFSTreeNode } from "./VFSTreeNode";
 
 /*
 This is explicitly NOT configurable.
@@ -9,14 +8,24 @@ always.
 */
 export const PATH_SEPARATOR = "/" as const;
 
+export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
+  path: PATH_SEPARATOR,
+  isDir: true,
+  readOnly: true,
+  id: 0,
+};
+
+export const isRootPath = (path: string) => path === ROOT_VFS_NODE.path;
+
 export const isPathDirectChildOfDirectory = (
   path: string,
   potentialParentPath: string
 ) => {
-  if (
-    potentialParentPath.endsWith(PATH_SEPARATOR) &&
-    path.replace(ensureTrailingSlash(filename(path)), "") === potentialParentPath
-  ) {
+  const isDirectory = path.endsWith(PATH_SEPARATOR);
+  const pathToCheckForEquality = isDirectory
+    ? getPathName(removeTrailingSlash(path))
+    : getPathName(path);
+  if (pathToCheckForEquality === potentialParentPath) {
     return true;
   }
   return false;
@@ -30,11 +39,7 @@ export const isPathDescendantOfOtherPath = (path: string, otherPath: string) => 
 };
 
 export const filename = (path: string): string => {
-  const matchEndOfPath = path.match(/\/[^/]+(?:\/?)$/);
-  if (matchEndOfPath?.length === 1) {
-    return matchEndOfPath[0];
-  }
-  return path;
+  return normalizePathSeparators(path).split(PATH_SEPARATOR).pop() ?? path;
 };
 
 /**
@@ -102,4 +107,22 @@ export const getUniquePath = (
     }
   }
   return;
+};
+
+export const sortFnByNumberOfSlashes = (pathA: string, pathB: string) => {
+  const [a, b] = [numberOfSlashes(pathA), numberOfSlashes(pathB)];
+  return a - b;
+};
+
+type vfsNodeSortFn = (
+  nodeA: IVirtualFileSystemNode,
+  nodeB: IVirtualFileSystemNode
+) => number;
+
+export const sortByPathDepth = (nodes: IVirtualFileSystemNode[], reverse = false) => {
+  const sortFunction: vfsNodeSortFn = reverse
+    ? (nodeA, nodeB) => sortFnByNumberOfSlashes(nodeA.path, nodeB.path)
+    : (nodeA, nodeB) => sortFnByNumberOfSlashes(nodeB.path, nodeA.path);
+
+  return nodes.slice().sort(sortFunction);
 };

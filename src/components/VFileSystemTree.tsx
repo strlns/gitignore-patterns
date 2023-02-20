@@ -3,7 +3,6 @@ import { VFSTreeNode } from "data/VFSTreeNode";
 import { useCallback } from "react";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { Action } from "../data/AppStateReducer";
-import Button from "./Atoms/Button";
 import SpacedList from "./Containers/SpacedList";
 import VFileSystemNode from "./VFileSystemNode";
 

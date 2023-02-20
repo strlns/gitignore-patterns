@@ -13,8 +13,3 @@ export interface Directory extends IVirtualFileSystemNode {
   // but would be nice combined with a type predicate https://github.com/microsoft/TypeScript/issues/6579
   path: string;
 }
-
-interface File extends IVirtualFileSystemNode {
-  isDir: false;
-  path: string;
-}

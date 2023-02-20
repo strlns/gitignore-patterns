@@ -4,17 +4,11 @@ import {
   isPathDirectChildOfDirectory,
   normalizePath,
   PATH_SEPARATOR,
+  ROOT_VFS_NODE,
 } from "data/PathUtilities";
 import { AppState } from "types/AppState";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { PartialBy } from "types/UtilityTypes";
-
-export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
-  path: PATH_SEPARATOR,
-  isDir: true,
-  readOnly: true,
-  id: 0,
-};
 
 export const initialState: AppState = {
   error: undefined,
@@ -58,6 +52,15 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "changeFilePath": {
       const newFiles = [...state.files];
+      //If renaming leads to duplicates, remove one of the duplicated paths.
+      if (newFiles.filter((node) => node.path === action.payload.path).length > 0) {
+        return appStateReducer(state, {
+          type: "removeFile",
+          payload: {
+            id: action.payload.id,
+          },
+        });
+      }
       //This leads to a lot of wasted work, but working with the indexes directly
       //makes writing the app complicated and hard to debug or test.
       //Also a symptom of the mismatch between tree structure and flat VFSNode array
@@ -167,6 +170,7 @@ export type Action =
 
 export const MAX_VFS_DEPTH = 1024;
 
+//eslint-disable-next-line @typescript-eslint/no-unused-vars
 const detectAndHighlightDuplicates = (state: AppState): AppState => {
   const filesByPath = new Map<string, IVirtualFileSystemNode[]>();
   let hasChanges = false;

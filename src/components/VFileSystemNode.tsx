@@ -20,7 +20,6 @@ type VFileSystemNodeProps = {
 
 const VFileSystemNode = ({
   node: { path, isDir, readOnly, duplicate: isDuplicate = false },
-  isIgnored,
   indentLevel,
   onChange,
   dispatch,

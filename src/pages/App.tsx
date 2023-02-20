@@ -1,10 +1,10 @@
-import { useMemo, useReducer } from "react";
 import Container from "components/Containers/Container";
 import Warning from "components/Error/Warning";
 import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
-import { getTreeFromVFSNodes } from "data/VFSTreeFromNodes";
+import { pathsToTreeSimple } from "data/VFSTreeFromNodes";
+import { useReducer } from "react";
 
 function App() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
@@ -13,7 +13,7 @@ function App() {
   //   return getTreeFromVFSNodes(state.files);
   // }, [state.files]);
 
-  const tree = getTreeFromVFSNodes(state.files);
+  const tree = pathsToTreeSimple(state.files);
 
   const { patterns, error } = state;
 

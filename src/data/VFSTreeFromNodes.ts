@@ -1,110 +1,59 @@
 import {
-  getPathName,
   isPathDescendantOfOtherPath,
   isPathDirectChildOfDirectory,
-  numberOfSlashes,
+  isRootPath,
+  normalizePath,
+  ROOT_VFS_NODE,
+  sortByPathDepth,
 } from "data/PathUtilities";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
 import { logSerialized } from "utilities/debug";
-import { ROOT_VFS_NODE } from "./AppStateReducer";
+import { searchVFSTreeNodeByCriterion } from "./searchNodeByCriterion";
 
 const VFSTreeRootNode: VFSTreeNode = {
   node: ROOT_VFS_NODE,
   children: [] as VFSTreeNode[],
 };
 
-type TreeMap = Map<IVirtualFileSystemNode, IVirtualFileSystemNode[]>;
-type TreeMapByPaths = Map<string, [IVirtualFileSystemNode, IVirtualFileSystemNode[]]>;
+export const pathsToTreeSimple = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => {
+  const nodes = sortByPathDepth(vfsNodes);
+  console.log(JSON.stringify(vfsNodes));
 
-//This is pretty expensive, but this app is not built to deal with huge
-//file system trees.
-export const getTreeFromVFSNodes = (
-  nodes: IVirtualFileSystemNode[],
-  sortAlphabetically = false
-) => {
-  const treeMap = new Map() as TreeMap;
-  const treeMapByPaths = new Map() as TreeMapByPaths;
-  //sort by number of slashes
-  nodes.sort((nodeA, nodeB) => {
-    const [a, b] = [numberOfSlashes(nodeA.path), numberOfSlashes(nodeB.path)];
-    if (a > b) return -1;
-    if (b < a) return 1;
-    return 0;
-  });
-  if (sortAlphabetically) {
-    nodes.sort((nodeA, nodeB) => nodeA.path.localeCompare(nodeB.path));
-  }
-  for (const node of nodes) {
-    if (node.isDir) {
-      const children = treeMapByPaths.get(node.path)?.[1] ?? [];
-      treeMap.set(node, children);
-      treeMapByPaths.set(node.path, [node, children]);
-      const parentPath = getPathName(node.path);
-      const [parent, siblings] = treeMapByPaths.get(parentPath) ?? [];
-      console.log("#", node.path, parent, siblings, parent, node);
-
-      if (parent && siblings && parent !== node) {
-        const newSiblings = [...siblings, node];
-        treeMapByPaths.set(parentPath, [parent, newSiblings]);
-        treeMap.set(parent, newSiblings);
-      }
-    } else {
-      const parentPath = getPathName(node.path);
-      const siblings = treeMapByPaths.get(parentPath)?.[1] ?? [];
-      const newSiblings = [...siblings, node];
-      const parent = treeMapByPaths.get(parentPath)?.[0];
-      treeMapByPaths.set(parentPath, [node, newSiblings]);
-      if (parent) {
-        treeMap.set(parent, newSiblings);
-      } else {
-        throw new Error("detached path");
-      }
-    }
-  }
-
-  return treeFromSortedMap(treeMap);
-};
-
-/*
-Map keys are ordered and we sorted:
-- ascending by number of slashes.
-- alphabetically, if the user wants to.
-Now collect the files for each path and build an object tree.
-*/
-const treeFromSortedMap = (treeMap: TreeMap): VFSTreeNode => {
   const tree = structuredClone(VFSTreeRootNode) as VFSTreeNode;
-  let first = true;
-  let curTreeNode = tree;
-  let i = 0;
-  for (const [vfsNode, vfsChildren] of treeMap.entries()) {
-    ++i;
-
-    if (first) {
-      if (vfsNode.path !== curTreeNode.node.path) {
-        console.error(JSON.stringify(vfsNode));
-        throw new Error("Map must be ordered and start with root node");
-      }
-      first = false;
-      curTreeNode.children = vfsChildren.map((child) => vfsToTreeNode(child));
+  while (nodes.length) {
+    const node = nodes.pop();
+    if (!node || isRootPath(node.path)) continue;
+    const path = normalizePath(node.path);
+    if (isPathDirectChildOfDirectory(path, ROOT_VFS_NODE.path)) {
+      tree.children.push(vfsToTreeNode(node));
       continue;
     }
 
-    const newTreeNode = vfsToTreeNode(vfsNode, vfsChildren);
-    if (isPathDirectChildOfDirectory(vfsNode.path, curTreeNode.node.path)) {
-      curTreeNode.children.push(newTreeNode);
-    } else if (isPathDescendantOfOtherPath(vfsNode.path, curTreeNode.node.path)) {
-      console.log("DESC");
-    } else {
-      console.log(
-        "Not a descendant: ",
-        JSON.stringify(vfsNode),
-        JSON.stringify(curTreeNode)
+    let parentTreeNode = searchVFSTreeNodeByCriterion(
+      (treeNode) => isPathDirectChildOfDirectory(node.path, treeNode.path),
+      [tree]
+    );
+
+    if (!parentTreeNode) {
+      parentTreeNode = searchVFSTreeNodeByCriterion(
+        (treeNode) => isPathDescendantOfOtherPath(node.path, treeNode.path),
+        [tree]
       );
     }
-    curTreeNode = newTreeNode;
+
+    if (parentTreeNode) {
+      parentTreeNode.children.push(vfsToTreeNode(node));
+      console.log("Added " + node.path);
+    } else {
+      logSerialized(tree, "Tree nodes");
+      logSerialized(nodes, "remaining nodes");
+      throw new Error(
+        `Could not find parent tree node for path ${node.path}, 
+        but it should already have been created`
+      );
+    }
   }
-  logSerialized(tree, "tree");
   return tree;
 };
 
