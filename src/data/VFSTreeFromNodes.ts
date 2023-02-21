@@ -16,15 +16,18 @@ const VFSTreeRootNode: VFSTreeNode = {
   children: [] as VFSTreeNode[],
 };
 
-export const pathsToTreeSimple = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => {
+export const pathsToTree = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => {
   const nodes = sortByPathDepth(vfsNodes);
-  console.log(JSON.stringify(vfsNodes));
-
   const tree = structuredClone(VFSTreeRootNode) as VFSTreeNode;
   while (nodes.length) {
     const node = nodes.pop();
-    if (!node || isRootPath(node.path)) continue;
+    if (!node) {
+      continue;
+    }
     const path = normalizePath(node.path);
+    if (isRootPath(path) && node.readOnly) {
+      continue;
+    }
     if (isPathDirectChildOfDirectory(path, ROOT_VFS_NODE.path)) {
       tree.children.push(vfsToTreeNode(node));
       continue;
@@ -44,7 +47,6 @@ export const pathsToTreeSimple = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNo
 
     if (parentTreeNode) {
       parentTreeNode.children.push(vfsToTreeNode(node));
-      console.log("Added " + node.path);
     } else {
       logSerialized(tree, "Tree nodes");
       logSerialized(nodes, "remaining nodes");

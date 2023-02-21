@@ -36,10 +36,6 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "removeFile": {
       const newFiles = [...state.files];
-      //This leads to a lot of wasted work, but working with the indexes directly
-      //makes writing the app complicated and hard to debug or test.
-      //Also a symptom of the mismatch between tree structure and flat VFSNode array
-      //(and my lack of ability to do this correct and efficient at the same time.)
       const indexOfFileToRemove = state.files.findIndex(
         (file) => file.id === action.payload.id
       );
@@ -52,14 +48,23 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case "changeFilePath": {
       const newFiles = [...state.files];
+      const newState = { ...state, files: newFiles };
+      const {
+        payload: { id, path },
+      } = action;
       //If renaming leads to duplicates, remove one of the duplicated paths.
       if (newFiles.filter((node) => node.path === action.payload.path).length > 0) {
-        return appStateReducer(state, {
-          type: "removeFile",
-          payload: {
-            id: action.payload.id,
-          },
-        });
+        if (path !== ROOT_VFS_NODE.path) {
+          return appStateReducer(state, {
+            type: "removeFile",
+            payload: {
+              id,
+            },
+          });
+        } else {
+          newFiles[id].path = path;
+          newFiles[id].duplicate = true;
+        }
       }
       //This leads to a lot of wasted work, but working with the indexes directly
       //makes writing the app complicated and hard to debug or test.
@@ -74,10 +79,10 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         changedFile.path = normalizePath(action.payload.path);
         changedFile.isDir = changedFile.path.endsWith(PATH_SEPARATOR);
         newFiles[indexOfFileToChange] = changedFile;
-        return { ...state, files: newFiles };
       } else {
         throw new Error(`Cannot change file with ID  ${action.payload.id}.`);
       }
+      return newState;
     }
     case "addPattern": {
       const newPattern = action.payload?.pattern ?? "";

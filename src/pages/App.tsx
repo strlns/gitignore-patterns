@@ -3,7 +3,7 @@ import Warning from "components/Error/Warning";
 import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
-import { pathsToTreeSimple } from "data/VFSTreeFromNodes";
+import { pathsToTree } from "data/VFSTreeFromNodes";
 import { useReducer } from "react";
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
   //   return getTreeFromVFSNodes(state.files);
   // }, [state.files]);
 
-  const tree = pathsToTreeSimple(state.files);
+  const tree = pathsToTree(state.files);
 
   const { patterns, error } = state;
 

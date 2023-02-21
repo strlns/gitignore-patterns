@@ -4,11 +4,10 @@ import iconClassNames from "../styles/Icon.module.css";
 import utilityClassNames from "../styles/Utilities.module.css";
 import { ChangedValueHandler } from "../types/ChangedValueHandler";
 import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
-import Button from "./Atoms/Button";
 import FolderIcon from "./Atoms/Icons/Folder";
-import PlusIcon from "./Atoms/Icons/Plus";
 import TextInput from "./Atoms/TextInput";
 import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
+import VFileSystemNodeActions from "./VFileSystemNodeActions";
 
 type VFileSystemNodeProps = {
   node: IVirtualFileSystemNode;
@@ -19,6 +18,7 @@ type VFileSystemNodeProps = {
 };
 
 const VFileSystemNode = ({
+  node,
   node: { path, isDir, readOnly, duplicate: isDuplicate = false },
   indentLevel,
   onChange,
@@ -42,23 +42,19 @@ const VFileSystemNode = ({
         onChange={onChange}
         readOnly={readOnly}
         className={utilityClassNames.flexGrow1}
+        style={{ opacity: isDuplicate ? 1 : 0.75 }}
       />
-
-      {isDir && !isDuplicate && (
-        <Button
-          square
-          onClick={() =>
-            dispatch({
-              type: "addFile",
-              payload: {
-                path: `${path}/file`,
-              },
-            })
-          }
-        >
-          <PlusIcon title="Add child" />
-        </Button>
-      )}
+      <VFileSystemNodeActions
+        node={node}
+        onAddChild={() =>
+          dispatch({
+            type: "addFile",
+            payload: {
+              path: `${path}/file`,
+            },
+          })
+        }
+      />
     </SpacedList>
   );
 };
