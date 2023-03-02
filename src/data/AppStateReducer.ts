@@ -1,3 +1,4 @@
+import cuid2 from "@paralleldrive/cuid2";
 import {
   getPathName,
   getUniquePath,
@@ -7,8 +8,7 @@ import {
   ROOT_VFS_NODE,
 } from "data/PathUtilities";
 import { AppState } from "types/AppState";
-import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { PartialBy } from "types/UtilityTypes";
+import { FileWithoutID } from "types/IVirtualFileSystemNode";
 
 export const initialState: AppState = {
   error: undefined,
@@ -47,41 +47,35 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       }
     }
     case "changeFilePath": {
+      const {
+        payload: { id, path: unsanitizedPath },
+      } = action;
+      const path = normalizePath(unsanitizedPath);
       const newFiles = [...state.files];
       const newState = { ...state, files: newFiles };
-      const {
-        payload: { id, path },
-      } = action;
-      //If renaming leads to duplicates, remove one of the duplicated paths.
-      if (newFiles.filter((node) => node.path === action.payload.path).length > 0) {
-        if (path !== ROOT_VFS_NODE.path) {
-          return appStateReducer(state, {
-            type: "removeFile",
-            payload: {
-              id,
-            },
-          });
-        } else {
-          newFiles[id].path = path;
-          newFiles[id].duplicate = true;
-        }
-      }
-      //This leads to a lot of wasted work, but working with the indexes directly
-      //makes writing the app complicated and hard to debug or test.
-      //Also a symptom of the mismatch between tree structure and flat VFSNode array
-      //(and my lack of ability to do this correct and efficient at the same time.)
-      const indexOfFileToChange = state.files.findIndex(
-        (file) => file.id === action.payload.id
-      );
-      if (indexOfFileToChange !== -1) {
-        // no deep clone needed here
-        const changedFile = { ...newFiles[indexOfFileToChange] };
-        changedFile.path = normalizePath(action.payload.path);
-        changedFile.isDir = changedFile.path.endsWith(PATH_SEPARATOR);
-        newFiles[indexOfFileToChange] = changedFile;
-      } else {
+      const indexOfFileToChange = state.files.findIndex((file) => file.id === id);
+      if (indexOfFileToChange === -1) {
         throw new Error(`Cannot change file with ID  ${action.payload.id}.`);
       }
+      const fileToChange = { ...newFiles[indexOfFileToChange] };
+      const isDuplicate =
+        newFiles.filter((node) => node.path === path && node.id !== id).length > 0;
+      //If renaming leads to duplicates, remove one of the duplicated paths.
+      if (isDuplicate && path !== ROOT_VFS_NODE.path) {
+        return appStateReducer(state, {
+          type: "removeFile",
+          payload: {
+            id,
+          },
+        });
+      }
+      //Except for the root path, to make typing less annoying.
+      fileToChange.duplicate = isDuplicate;
+
+      fileToChange.path = path;
+      fileToChange.isDir = fileToChange.path.endsWith(PATH_SEPARATOR);
+      newFiles[indexOfFileToChange] = fileToChange;
+
       return newState;
     }
     case "addPattern": {
@@ -129,20 +123,20 @@ export type Action =
   | {
       //also covers directories. maybe rename action.
       type: "addFile";
-      payload?: {
+      payload: {
         path: string;
       };
     }
   | {
       type: "removeFile";
       payload: {
-        id: number;
+        id: string;
       };
     }
   | {
       type: "changeFilePath";
       payload: {
-        id: number;
+        id: string;
         path: string;
       };
     }
@@ -175,32 +169,6 @@ export type Action =
 
 export const MAX_VFS_DEPTH = 1024;
 
-//eslint-disable-next-line @typescript-eslint/no-unused-vars
-const detectAndHighlightDuplicates = (state: AppState): AppState => {
-  const filesByPath = new Map<string, IVirtualFileSystemNode[]>();
-  let hasChanges = false;
-  const files = [...state.files];
-  for (const file of state.files) {
-    const filesWithPath = filesByPath.get(file.path) ?? [];
-    filesWithPath.push(file);
-    if (filesWithPath.length > 1) {
-      filesWithPath.forEach((file, index) => {
-        const markAsDuplicate = index > 0;
-        if (markAsDuplicate !== Boolean(file.duplicate)) {
-          file = { ...file, duplicate: markAsDuplicate };
-          hasChanges = true;
-        }
-      });
-    } else if (file.duplicate) {
-      file.duplicate = false;
-    }
-  }
-  if (hasChanges) {
-    return { ...state, files };
-  }
-  return state;
-};
-
 const createNewFileAction = (
   state: AppState,
   path: string,
@@ -209,7 +177,7 @@ const createNewFileAction = (
   const newFileWithoutID = {
     path,
     isDir: path.endsWith(PATH_SEPARATOR),
-  } as PartialBy<IVirtualFileSystemNode, "id">;
+  } as FileWithoutID;
 
   const duplicate = state.files.find(
     (file) => normalizePath(file.path) === normalizePath(newFileWithoutID.path)
@@ -233,7 +201,7 @@ const createNewFileAction = (
   }
 
   const newFiles = [...state.files];
-  const newFile = { ...newFileWithoutID, id: state.files.length };
+  const newFile = { ...newFileWithoutID, id: cuid2.createId() };
   newFiles.push(newFile);
 
   return {

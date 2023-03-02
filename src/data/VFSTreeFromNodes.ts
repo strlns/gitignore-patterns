@@ -9,6 +9,7 @@ import {
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
 import { logSerialized } from "utilities/debug";
+import { MAX_VFS_DEPTH } from "./AppStateReducer";
 import { searchVFSTreeNodeByCriterion } from "./searchNodeByCriterion";
 
 const VFSTreeRootNode: VFSTreeNode = {
@@ -56,7 +57,7 @@ export const pathsToTree = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => 
       );
     }
   }
-  return tree;
+  return sortTreeNodes(tree);
 };
 
 const vfsToTreeNode = (
@@ -67,4 +68,23 @@ const vfsToTreeNode = (
     node,
     children: children.map((child) => vfsToTreeNode(child)),
   };
+};
+
+type TreeNodeSortFunction = (nodeA: VFSTreeNode, nodeB: VFSTreeNode) => number;
+
+const defaultTreeNodeSortFn: TreeNodeSortFunction = (nodeA, nodeB) =>
+  String.prototype.localeCompare.call(nodeA.node.id, nodeB.node.id);
+
+const sortTreeNodes = (
+  tree: VFSTreeNode,
+  sortFn = defaultTreeNodeSortFn,
+  iteration = 0
+) => {
+  tree.children.sort(sortFn);
+  if (iteration < MAX_VFS_DEPTH) {
+    for (const child of tree.children) {
+      sortTreeNodes(child, sortFn, ++iteration);
+    }
+  }
+  return tree;
 };

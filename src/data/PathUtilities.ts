@@ -55,11 +55,11 @@ export const normalizePathSeparators = (path: string): string => {
 };
 
 export const ensureTrailingSlash = (path: string) => {
-  return path.replace(/\/?$/, PATH_SEPARATOR);
+  return path.endsWith(PATH_SEPARATOR) ? path : `${path}${PATH_SEPARATOR}`;
 };
 
 export const ensureLeadingSlash = (path: string) => {
-  return path.replace(/^\/?$/, PATH_SEPARATOR);
+  return path.startsWith(PATH_SEPARATOR) ? path : `${PATH_SEPARATOR}${path}`;
 };
 
 export const removeTrailingSlash = (path: string) => {

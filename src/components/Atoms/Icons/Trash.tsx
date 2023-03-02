@@ -1,7 +1,7 @@
 import iconClassNames from "styles/Icon.module.css";
 
 /**title is not actually used as HTML attribute on the SVG element because <title> + aria-label are semantically better. */
-export default function PlusIcon({
+export default function TrashIcon({
   title,
   ...attributes
 }: React.HTMLAttributes<SVGElement>) {
@@ -16,6 +16,7 @@ export default function PlusIcon({
       aria-label={title}
       {...attributes}
     >
+      <title>{title}</title>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

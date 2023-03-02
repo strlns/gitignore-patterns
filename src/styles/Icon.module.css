@@ -1,5 +1,5 @@
 .icon {
-  --size: 1em;
-  width: 1em;
+  --size: var(--spacing);
+  width: var(--size);
   /*aspect-ratio: auto;*/
 }

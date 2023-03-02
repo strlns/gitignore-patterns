@@ -10,7 +10,7 @@ type PatternLineProps = {
 
 const Pattern = ({ pattern, onChange }: PatternLineProps) => {
   return (
-    <SpacedList direction={DIRECTIONS.Horizontal}>
+    <SpacedList direction={DIRECTIONS.Horizontal} flex>
       <TextInput value={pattern} onChange={onChange} />
     </SpacedList>
   );

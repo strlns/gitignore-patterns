@@ -4,22 +4,20 @@ import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
 import { pathsToTree } from "data/VFSTreeFromNodes";
-import { useReducer } from "react";
+import { useMemo, useReducer } from "react";
 
 function App() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
 
-  // const tree = useMemo(() => {
-  //   return getTreeFromVFSNodes(state.files);
-  // }, [state.files]);
-
-  const tree = pathsToTree(state.files);
+  const tree = useMemo(() => {
+    return pathsToTree(state.files);
+  }, [state.files]);
 
   const { patterns, error } = state;
 
   return (
     <Container size="lg">
-      <h1>.gitignore Pattern</h1>
+      <h1>Validate .gitignore patterns</h1>
       {error && (
         <Warning error={error} onClear={() => dispatch({ type: "clearError" })} />
       )}

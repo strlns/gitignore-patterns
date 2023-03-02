@@ -3,7 +3,7 @@ import { VFSTreeNode } from "data/VFSTreeNode";
 import { useCallback } from "react";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { Action } from "../data/AppStateReducer";
-import SpacedList from "./Containers/SpacedList";
+import SpacedList, { SPACINGS } from "./Containers/SpacedList";
 import VFileSystemNode from "./VFileSystemNode";
 
 type VFileSystemTreeProps = {
@@ -23,7 +23,7 @@ const VFileSystemTree = ({ tree, dispatch }: VFileSystemTreeProps) => {
     []
   );
   return (
-    <SpacedList>
+    <SpacedList spacing={SPACINGS.Loose}>
       <VFileSystemNode
         dispatch={dispatch}
         node={tree.node}

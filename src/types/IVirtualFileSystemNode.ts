@@ -1,10 +1,15 @@
+import { PartialBy } from "./UtilityTypes";
+
 export interface IVirtualFileSystemNode {
   path: string;
   isDir: boolean;
-  /*In this app, the user cannot remove the root directory of his virtual git repository.*/
+  /*In this app, the user cannot remove the root directory of his virtual 
+  git repository.*/
   readonly readOnly?: boolean; //treated as false by default
   duplicate?: boolean; //treated as false by default
-  id: number; //auto-incremented node ID
+  /*sequential ID, because collisions cause problems in some scenarios,
+  this is filled using @paralleldrive/cuid2*/
+  id: string;
 }
 
 export interface Directory extends IVirtualFileSystemNode {
@@ -13,3 +18,5 @@ export interface Directory extends IVirtualFileSystemNode {
   // but would be nice combined with a type predicate https://github.com/microsoft/TypeScript/issues/6579
   path: string;
 }
+
+export type FileWithoutID = PartialBy<IVirtualFileSystemNode, "id">;

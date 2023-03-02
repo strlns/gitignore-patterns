@@ -1,13 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Action } from "../data/AppStateReducer";
-import iconClassNames from "../styles/Icon.module.css";
-import utilityClassNames from "../styles/Utilities.module.css";
 import { ChangedValueHandler } from "../types/ChangedValueHandler";
 import { IVirtualFileSystemNode } from "../types/IVirtualFileSystemNode";
-import FolderIcon from "./Atoms/Icons/Folder";
 import TextInput from "./Atoms/TextInput";
 import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
 import VFileSystemNodeActions from "./VFileSystemNodeActions";
+import VFileSystemNodeIcon from "./VFileSystemNodeIcon";
 
 type VFileSystemNodeProps = {
   node: IVirtualFileSystemNode;
@@ -19,7 +17,7 @@ type VFileSystemNodeProps = {
 
 const VFileSystemNode = ({
   node,
-  node: { path, isDir, readOnly, duplicate: isDuplicate = false },
+  node: { path, readOnly, duplicate: isDuplicate = false },
   indentLevel,
   onChange,
   dispatch,
@@ -32,17 +30,16 @@ const VFileSystemNode = ({
   return (
     <SpacedList
       direction={DIRECTIONS.Horizontal}
-      isFlex={true}
+      flex={true}
       style={getInlineStyleSpacingFromTreeLevel(indentLevel)}
     >
-      {isDir ? <FolderIcon /> : <span className={iconClassNames.icon}></span>}
+      <VFileSystemNodeIcon node={node} />
       <TextInput
         value={path}
         ref={inputRef}
         onChange={onChange}
         readOnly={readOnly}
-        className={utilityClassNames.flexGrow1}
-        style={{ opacity: isDuplicate ? 1 : 0.75 }}
+        style={{ opacity: isDuplicate ? 0.5 : 1 }}
       />
       <VFileSystemNodeActions
         node={node}
@@ -54,14 +51,22 @@ const VFileSystemNode = ({
             },
           })
         }
+        onRemove={() =>
+          dispatch({
+            type: "removeFile",
+            payload: {
+              id: node.id,
+            },
+          })
+        }
       />
     </SpacedList>
   );
 };
 
-//sshhh...
+//sshhh... replace this with tree UI component
 const getInlineStyleSpacingFromTreeLevel = (level: number): React.CSSProperties => ({
-  marginLeft: `${(level - 1) * 2}rem`,
+  marginLeft: `calc(${Math.max(1, level) - 1} * 1.125rem)`,
 });
 
 export default VFileSystemNode;

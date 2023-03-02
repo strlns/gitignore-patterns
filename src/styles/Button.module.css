@@ -10,8 +10,6 @@
   transition: border-color 0.25s;
   background-color: var(--color-button-bg);
   color: var(--color-button-text);
-  margin-top: var(--spacing);
-  margin-bottom: var(--spacing);
 }
 .button:hover {
   outline: 0.25rem solid var(--color-outline);
@@ -21,9 +19,8 @@
   outline-width: 0.5rem;
 }
 .square {
-  --size: 1em;
-  --spacing: 0;
-  padding: 0;
+  --size: 2em;
+  padding: unset;
   aspect-ratio: 1;
   display: inline-flex;
   align-items: center;
