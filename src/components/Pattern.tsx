@@ -1,18 +1,25 @@
-import { ChangedValueHandler } from "../types/ChangedValueHandler";
-import TextInput from "./Atoms/TextInput";
-import SpacedList, { DIRECTIONS } from "./Containers/SpacedList";
+import { Button, Input, InputProps } from "@geist-ui/core";
+import { Trash } from "@geist-ui/icons";
 
 type PatternLineProps = {
   pattern: string;
   isValidSyntax?: boolean;
-  onChange?: ChangedValueHandler;
+  onChange?: InputProps["onChange"];
+  onRemove: () => void;
 };
 
-const Pattern = ({ pattern, onChange }: PatternLineProps) => {
+const Pattern = ({ pattern, onChange, onRemove }: PatternLineProps) => {
   return (
-    <SpacedList direction={DIRECTIONS.Horizontal} flex>
-      <TextInput value={pattern} onChange={onChange} />
-    </SpacedList>
+    <Input
+      value={pattern}
+      onChange={onChange}
+      onIconClick={onRemove}
+      iconRight={
+        <span role="button" style={{ pointerEvents: "auto", cursor: "pointer" }}>
+          <Trash size={1} />
+        </span>
+      }
+    />
   );
 };
 

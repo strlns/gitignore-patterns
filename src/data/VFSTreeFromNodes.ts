@@ -57,7 +57,8 @@ export const pathsToTree = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => 
       );
     }
   }
-  return sortTreeNodes(tree);
+  //return sortTreeNodes(tree);
+  return tree;
 };
 
 const vfsToTreeNode = (

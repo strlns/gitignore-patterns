@@ -1,7 +1,5 @@
+import { AlertTriangle, File, Folder } from "@geist-ui/icons";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import DocumentIcon from "./Atoms/Icons/Document";
-import ExlamationMarkIcon from "./Atoms/Icons/ExclamationMark";
-import FolderIcon from "./Atoms/Icons/Folder";
 
 type VFileSystemNodeIconProps = {
   node: IVirtualFileSystemNode;
@@ -9,11 +7,11 @@ type VFileSystemNodeIconProps = {
 
 const VFileSystemNodeIcon = ({ node }: VFileSystemNodeIconProps) => {
   if (node.duplicate) {
-    return <ExlamationMarkIcon />;
+    return <AlertTriangle />;
   } else if (node.isDir) {
-    return <FolderIcon />;
+    return <Folder />;
   } else {
-    return <DocumentIcon />;
+    return <File />;
   }
 };
 

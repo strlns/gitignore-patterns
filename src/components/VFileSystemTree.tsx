@@ -1,41 +1,20 @@
-import { numberOfSlashes } from "data/PathUtilities";
+import { Tree } from "@geist-ui/core";
 import { VFSTreeNode } from "data/VFSTreeNode";
 import { useCallback } from "react";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { Action } from "../data/AppStateReducer";
-import SpacedList, { SPACINGS } from "./Containers/SpacedList";
-import VFileSystemNode from "./VFileSystemNode";
+import VFileSystemTreeNode from "./VFileSystemTreeNode";
 
 type VFileSystemTreeProps = {
   tree: VFSTreeNode;
   dispatch: React.Dispatch<Action>;
 };
 
-type IChangeFilePathHandler = (file: IVirtualFileSystemNode, path: string) => void;
-
 const VFileSystemTree = ({ tree, dispatch }: VFileSystemTreeProps) => {
-  const onChangeFilePath = useCallback<IChangeFilePathHandler>(
-    (file, path) =>
-      dispatch({
-        type: "changeFilePath",
-        payload: { id: file.id, path },
-      }),
-    []
-  );
   return (
-    <SpacedList spacing={SPACINGS.Loose}>
-      <VFileSystemNode
-        dispatch={dispatch}
-        node={tree.node}
-        indentLevel={numberOfSlashes(tree.node.path)}
-        onChange={(path) => onChangeFilePath(tree.node, path)}
-      />
-      <>
-        {tree.children.map((child) => (
-          <VFileSystemTree key={child.node.id} tree={child} dispatch={dispatch} />
-        ))}
-      </>
-    </SpacedList>
+    <Tree initialExpand={true}>
+      <VFileSystemTreeNode treeNode={tree} dispatch={dispatch} />
+    </Tree>
   );
 };
 

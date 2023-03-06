@@ -10,6 +10,8 @@ import {
 import { AppState } from "types/AppState";
 import { FileWithoutID } from "types/IVirtualFileSystemNode";
 
+cuid2.init();
+
 export const initialState: AppState = {
   error: undefined,
   files: [structuredClone(ROOT_VFS_NODE)],
@@ -40,7 +42,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
         (file) => file.id === action.payload.id
       );
       if (indexOfFileToRemove !== -1) {
-        newFiles.splice(indexOfFileToRemove);
+        newFiles.splice(indexOfFileToRemove, 1);
         return { ...state, files: newFiles };
       } else {
         throw new Error(`Cannot remove file with ID  ${action.payload.id}.`);
@@ -190,8 +192,9 @@ const createNewFileAction = (
     );
     if (renameDuplicates) {
       const newPath = getUniquePath(path, siblings);
+
       if (newPath && newPath !== duplicate.path) {
-        createNewFileAction({ ...state, files: siblings }, newPath);
+        return createNewFileAction({ ...state, files: siblings }, newPath);
       }
       return {
         ...state,

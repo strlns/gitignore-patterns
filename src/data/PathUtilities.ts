@@ -1,3 +1,4 @@
+import cuid2 from "@paralleldrive/cuid2";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 
 /*
@@ -12,7 +13,7 @@ export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
   path: PATH_SEPARATOR,
   isDir: true,
   readOnly: true,
-  id: 0,
+  id: cuid2.createId(),
 };
 
 export const isRootPath = (path: string) => path === ROOT_VFS_NODE.path;
@@ -94,16 +95,16 @@ export const getUniquePath = (
   let uniqueName = name;
   while (i < maxIterations) {
     ++i;
-    foundPath = !directory.some((file) => filename(file.path) === uniqueName);
+    foundPath = !directory.some((file) => filename(file.path) === filename(uniqueName));
     if (foundPath) {
       return uniqueName;
     }
     const bracesRegexp = / \((\d+)\)$/;
     const bracesMatch = uniqueName.match(bracesRegexp);
-    if (bracesMatch?.length == 2) {
-      uniqueName = uniqueName.replace(bracesRegexp, ` (${i})`);
-    } else if (i <= 1) {
+    if (i <= 1) {
       uniqueName += " (1)";
+    } else if (bracesMatch?.length == 2) {
+      uniqueName = uniqueName.replace(bracesRegexp, ` (${i})`);
     }
   }
   return;

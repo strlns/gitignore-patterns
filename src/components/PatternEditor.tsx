@@ -1,6 +1,5 @@
+import { Button, Grid } from "@geist-ui/core";
 import { Action } from "data/AppStateReducer";
-import Button from "./Atoms/Button";
-import SpacedList from "./Containers/SpacedList";
 import Pattern from "./Pattern";
 
 type PatternEditorProps = {
@@ -10,25 +9,32 @@ type PatternEditorProps = {
 
 const PatternEditor = ({ patterns, dispatch }: PatternEditorProps) => {
   return (
-    <>
-      <SpacedList>
-        {patterns.map((pattern, index) => (
+    <Grid.Container gap={1} direction="column">
+      {patterns.map((pattern, index) => (
+        <Grid key={index}>
           <Pattern
-            key={index}
             pattern={pattern}
-            onChange={(pattern) =>
+            onChange={(event) =>
               dispatch({
                 type: "changePattern",
-                payload: { index, pattern },
+                payload: { index, pattern: event.currentTarget.value },
+              })
+            }
+            onRemove={() =>
+              dispatch({
+                type: "removePattern",
+                payload: { index },
               })
             }
           />
-        ))}
-      </SpacedList>
-      <Button onClick={() => dispatch({ type: "addPattern" })}>
-        Add line to .gitignore
-      </Button>
-    </>
+        </Grid>
+      ))}
+      <Grid>
+        <Button onClick={() => dispatch({ type: "addPattern" })} auto>
+          Add line to .gitignore
+        </Button>
+      </Grid>
+    </Grid.Container>
   );
 };
 

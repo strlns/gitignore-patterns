@@ -18,7 +18,8 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./src/*", "./node_modules/*"]
-    }
+    },
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "include": ["src", "postcss.config.cjs"],
   "references": [{ "path": "./tsconfig.node.json" }]
