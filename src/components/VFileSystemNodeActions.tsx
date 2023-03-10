@@ -1,6 +1,7 @@
-import { Button, ButtonGroup } from "@geist-ui/core";
 import { FilePlus, Trash } from "@geist-ui/icons";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import Box from "./Atoms/Box";
+import SquareButton from "./Atoms/SquareButton";
 
 type VFileSystemNodeActionProps = {
   onAddChild: (parentPath: string) => void;
@@ -14,18 +15,21 @@ const VFileSystemNodeActions = ({
   onRemove,
 }: VFileSystemNodeActionProps) => {
   return (
-    <ButtonGroup>
+    <Box horizontal>
       {node.isDir && (
-        <Button
-          auto
+        <SquareButton
           title={"Add child"}
           onClick={() => onAddChild(node.path)}
           icon={<FilePlus />}
         />
       )}
-      <Button auto title={"Remove"} onClick={() => onRemove(node)} icon={<Trash />} />
-    </ButtonGroup>
+      {node.readOnly || (
+        <SquareButton title={"Remove"} onClick={() => onRemove(node)} icon={<Trash />} />
+      )}
+    </Box>
   );
 };
+
+VFileSystemNodeActions.displayName = "VFileSystemNodeActions";
 
 export default VFileSystemNodeActions;
