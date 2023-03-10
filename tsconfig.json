@@ -8,6 +8,7 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -20,7 +21,8 @@
     "paths": {
       "@/*": ["./src/*", "./node_modules/*"]
     },
-    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+    "typeRoots": ["./types"]
   },
   "include": ["src", "postcss.config.cjs"],
   "references": [{ "path": "./tsconfig.node.json" }]

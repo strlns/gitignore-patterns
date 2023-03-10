@@ -3,15 +3,20 @@ import Warning from "components/Error/Warning";
 import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
+import { processGitignore } from "data/processGitignore";
 import { pathsToTree } from "data/VFSTreeFromNodes";
 import { useMemo, useReducer } from "react";
 
 function Home() {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
 
+  const filesWithGitignoreData = useMemo(() => {
+    return processGitignore(state.files, state.patterns);
+  }, [state.files, state.patterns]);
+
   const tree = useMemo(() => {
-    return pathsToTree(state.files);
-  }, [state.files]);
+    return pathsToTree(filesWithGitignoreData);
+  }, [filesWithGitignoreData]);
 
   const { patterns, error } = state;
 

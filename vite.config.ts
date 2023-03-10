@@ -7,6 +7,7 @@ import postcssNestingPlugin from "postcss-nesting";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/gitignore-patterns/",
   plugins: [react(), tsconfigPaths(), eslintPlugin()],
   css: {
     postcss: {

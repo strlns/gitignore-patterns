@@ -9,6 +9,7 @@ const ROUTES = [
     element: <Home />,
     errorElement: <RouteError />,
     id: "Home",
+    index: true,
   },
   //...
 ] as const;

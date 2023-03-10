@@ -14,6 +14,8 @@ export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
   isDir: true,
   readOnly: true,
   id: cuid2.createId(),
+  createdAt: new Date(),
+  isIgnored: false,
 };
 
 export const isRootPath = (path: string) => path === ROOT_VFS_NODE.path;

@@ -8,12 +8,26 @@ import {
   ROOT_VFS_NODE,
 } from "data/PathUtilities";
 import { AppState } from "types/AppState";
+import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 cuid2.init();
+
+const initialFiles = (): IVirtualFileSystemNode[] => {
+  return [
+    ROOT_VFS_NODE,
+    {
+      path: "/src/index.ts",
+      isIgnored: false,
+      isDir: false,
+      createdAt: new Date(),
+      id: cuid2.createId(),
+    },
+  ];
+};
 
 export const initialState: AppState = {
   error: undefined,
-  files: [structuredClone(ROOT_VFS_NODE)],
-  patterns: [],
+  files: initialFiles(),
+  patterns: ["node_modules"],
 };
 
 /*
@@ -202,7 +216,12 @@ const createNewFileAction = (
   }
 
   const newFiles = [...state.files];
-  const newFile = { ...newFileWithoutID, id: cuid2.createId(), createdAt: new Date() };
+  const newFile = {
+    ...newFileWithoutID,
+    id: cuid2.createId(),
+    createdAt: new Date(),
+    isIgnored: false,
+  };
   newFiles.push(newFile);
 
   return {

@@ -11,6 +11,7 @@ export interface IVirtualFileSystemNode {
   this is filled using @paralleldrive/cuid2*/
   id: string;
   createdAt: Date;
+  isIgnored: boolean;
 }
 
 export interface Directory extends IVirtualFileSystemNode {

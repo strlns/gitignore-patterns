@@ -27,11 +27,20 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const level = useMemo(() => numberOfSlashes(treeNode.node.path), []);
-  const readOnly = treeNode.node.readOnly;
+  const { isIgnored, readOnly, path } = treeNode.node;
+
+  const inlineSpacingFromTreeLevel = useMemo(() => {
+    const level = numberOfSlashes(path);
+    return getInlineStyleSpacingFromTreeLevel(level);
+  }, [path]);
+
+  const styles = {
+    ...inlineSpacingFromTreeLevel,
+    opacity: treeNode.node.isIgnored ? 0.25 : 1,
+  };
 
   return (
-    <Box gap={2} style={getInlineStyleSpacingFromTreeLevel(level)}>
+    <Box gap={2} style={styles}>
       <Box horizontal gap={2} alignItems="center">
         <VFileSystemNodeIcon node={treeNode.node} />
         <Input
@@ -51,6 +60,14 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
               },
             })
           }
+          onAddDirectory={() =>
+            dispatch({
+              type: "addFile",
+              payload: {
+                path: `${treeNode.node.path}/dir/`,
+              },
+            })
+          }
           onRemove={() =>
             dispatch({
               type: "removeFile",
@@ -60,6 +77,7 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
             })
           }
         />
+        {isIgnored && "IGNORED"}
       </Box>
       {treeNode.children.map((child) => (
         <VFileSystemTreeNode treeNode={child} key={child.node.id} dispatch={dispatch} />

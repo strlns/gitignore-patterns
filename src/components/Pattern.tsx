@@ -1,4 +1,4 @@
-import { Button, Input, InputProps } from "@geist-ui/core";
+import { Input, InputProps } from "@geist-ui/core";
 import { Trash } from "@geist-ui/icons";
 
 type PatternLineProps = {

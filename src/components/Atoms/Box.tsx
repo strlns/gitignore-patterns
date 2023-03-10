@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import { ForwardedRef, forwardRef, ReactNode } from "react";
 import boxStyles from "styles/Box.module.css";
-import { logSerialized } from "utilities/debug";
 
 /**
  * Allowed gap values, currently representing multiples of 0.25rem in CSS.
