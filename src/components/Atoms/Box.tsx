@@ -12,7 +12,7 @@ import boxStyles from "styles/Box.module.css";
 type GapValue = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export type BoxProps<TElement extends HTMLElement = HTMLDivElement> = {
-  children?: ReactNode[];
+  children?: ReactNode[] | ReactNode;
   horizontal?: boolean;
   gap?: GapValue;
   alignItems?: React.CSSProperties["alignItems"];
