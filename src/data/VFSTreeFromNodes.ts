@@ -73,7 +73,7 @@ const vfsToTreeNode = (
 type TreeNodeSortFunction = (nodeA: VFSTreeNode, nodeB: VFSTreeNode) => number;
 
 const defaultTreeNodeSortFn: TreeNodeSortFunction = (nodeA, nodeB) =>
-  String.prototype.localeCompare.call(nodeA.node.id, nodeB.node.id);
+  nodeA.node.createdAt.getTime() - nodeB.node.createdAt.getTime();
 
 const sortTreeNodes = (
   tree: VFSTreeNode,

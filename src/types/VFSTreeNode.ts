@@ -5,7 +5,6 @@ import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
  * (so, even a DAG). This is not a practical representation of a file system, that's why we convert between
  * the two representations.
  */
-
 export interface VFSTreeNode {
   node: IVirtualFileSystemNode;
   children: VFSTreeNode[];

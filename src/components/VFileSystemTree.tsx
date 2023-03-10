@@ -1,7 +1,4 @@
-import { Tree } from "@geist-ui/core";
 import { VFSTreeNode } from "data/VFSTreeNode";
-import { useCallback } from "react";
-import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { Action } from "../data/AppStateReducer";
 import VFileSystemTreeNode from "./VFileSystemTreeNode";
 
@@ -11,11 +8,7 @@ type VFileSystemTreeProps = {
 };
 
 const VFileSystemTree = ({ tree, dispatch }: VFileSystemTreeProps) => {
-  return (
-    <Tree initialExpand={true}>
-      <VFileSystemTreeNode treeNode={tree} dispatch={dispatch} />
-    </Tree>
-  );
+  return <VFileSystemTreeNode treeNode={tree} dispatch={dispatch} />;
 };
 
 export default VFileSystemTree;

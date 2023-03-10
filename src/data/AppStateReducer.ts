@@ -8,8 +8,6 @@ import {
   ROOT_VFS_NODE,
 } from "data/PathUtilities";
 import { AppState } from "types/AppState";
-import { FileWithoutID } from "types/IVirtualFileSystemNode";
-
 cuid2.init();
 
 export const initialState: AppState = {
@@ -179,7 +177,7 @@ const createNewFileAction = (
   const newFileWithoutID = {
     path,
     isDir: path.endsWith(PATH_SEPARATOR),
-  } as FileWithoutID;
+  };
 
   const duplicate = state.files.find(
     (file) => normalizePath(file.path) === normalizePath(newFileWithoutID.path)
@@ -204,7 +202,7 @@ const createNewFileAction = (
   }
 
   const newFiles = [...state.files];
-  const newFile = { ...newFileWithoutID, id: cuid2.createId() };
+  const newFile = { ...newFileWithoutID, id: cuid2.createId(), createdAt: new Date() };
   newFiles.push(newFile);
 
   return {

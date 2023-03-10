@@ -1,4 +1,4 @@
-import { Button, ToastAction, useToasts } from "@geist-ui/core";
+import { ToastAction, useToasts } from "@geist-ui/core";
 import cuid2 from "@paralleldrive/cuid2";
 import { useEffect } from "react";
 import getErrorMessageFromUnknownError from "utilities/humanReadableError";

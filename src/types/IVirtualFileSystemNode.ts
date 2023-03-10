@@ -7,9 +7,10 @@ export interface IVirtualFileSystemNode {
   git repository.*/
   readonly readOnly?: boolean; //treated as false by default
   duplicate?: boolean; //treated as false by default
-  /*sequential ID, because collisions cause problems in some scenarios,
+  /*Because collisions cause problems in some scenarios,
   this is filled using @paralleldrive/cuid2*/
   id: string;
+  createdAt: Date;
 }
 
 export interface Directory extends IVirtualFileSystemNode {

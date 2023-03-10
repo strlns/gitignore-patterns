@@ -1,11 +1,12 @@
-import { Input, Tree } from "@geist-ui/core";
+import { Input } from "@geist-ui/core";
 import { Action } from "data/AppStateReducer";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { numberOfSlashes } from "data/PathUtilities";
+import { useCallback, useMemo, useRef } from "react";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
-import { useOnClickOutside } from "usehooks-ts";
 import Box, { BoxProps } from "./Atoms/Box";
 import VFileSystemNodeActions from "./VFileSystemNodeActions";
+import VFileSystemNodeIcon from "./VFileSystemNodeIcon";
 
 interface VFileSystemTreeNodeProps extends BoxProps {
   treeNode: VFSTreeNode;
@@ -24,92 +25,51 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
     []
   );
 
-  const [isEditName, setEditName] = useState(false);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onClickOutsideInput = useCallback(() => {
-    setEditName(false);
-  }, []);
-
-  useOnClickOutside(inputRef, onClickOutsideInput);
-
-  const toggleEditName = useCallback(
-    (force?: boolean) => {
-      if (treeNode.node.readOnly) {
-        return;
-      }
-      setEditName((prev) => force ?? !prev);
-    },
-    [treeNode]
-  );
-
-  useEffect(() => {
-    if (isEditName) {
-      inputRef.current?.focus();
-    }
-  }, [isEditName]);
+  const level = useMemo(() => numberOfSlashes(treeNode.node.path), []);
+  const readOnly = treeNode.node.readOnly;
 
   return (
-    <Box horizontal gap={0}>
-      {treeNode.node.isDir ? (
-        <Tree.Folder
-          name={isEditName ? "" : treeNode.node.path}
-          style={{ flexGrow: isEditName ? 0 : 1 }}
-          onClick={() => toggleEditName(true)}
-        >
-          {treeNode.children.map((child) => (
-            <VFileSystemTreeNode
-              key={child.node.id}
-              treeNode={child}
-              dispatch={dispatch}
-            />
-          ))}
-        </Tree.Folder>
-      ) : (
-        <Tree.File
-          name={isEditName ? "" : treeNode.node.path}
-          style={{ flexGrow: isEditName ? 0 : 1 }}
-          onClick={() => toggleEditName(true)}
+    <Box gap={2} style={getInlineStyleSpacingFromTreeLevel(level)}>
+      <Box horizontal gap={2} alignItems="center">
+        <VFileSystemNodeIcon node={treeNode.node} />
+        <Input
+          value={treeNode.node.path}
+          onChange={(event) => onChangeFilePath(treeNode.node, event.currentTarget.value)}
+          ref={inputRef}
+          style={{ alignSelf: "stretch", pointerEvents: readOnly ? "none" : "auto" }}
+          readOnly={readOnly}
         />
-      )}
-
-      {isEditName && (
-        <div style={{ flexGrow: 1 }}>
-          <Input
-            value={treeNode.node.path}
-            onChange={(event) =>
-              onChangeFilePath(treeNode.node, event.currentTarget.value)
-            }
-            style={{ flexGrow: isEditName ? 1 : 0 }}
-            onBlur={() => {
-              toggleEditName(false);
-            }}
-            ref={inputRef}
-          />
-        </div>
-      )}
-      <VFileSystemNodeActions
-        node={treeNode.node}
-        onAddChild={() =>
-          dispatch({
-            type: "addFile",
-            payload: {
-              path: `${treeNode.node.path}/file`,
-            },
-          })
-        }
-        onRemove={() =>
-          dispatch({
-            type: "removeFile",
-            payload: {
-              id: treeNode.node.id,
-            },
-          })
-        }
-      />
+        <VFileSystemNodeActions
+          node={treeNode.node}
+          onAddChild={() =>
+            dispatch({
+              type: "addFile",
+              payload: {
+                path: `${treeNode.node.path}/file`,
+              },
+            })
+          }
+          onRemove={() =>
+            dispatch({
+              type: "removeFile",
+              payload: {
+                id: treeNode.node.id,
+              },
+            })
+          }
+        />
+      </Box>
+      {treeNode.children.map((child) => (
+        <VFileSystemTreeNode treeNode={child} key={child.node.id} dispatch={dispatch} />
+      ))}
     </Box>
   );
 };
+
+const getInlineStyleSpacingFromTreeLevel = (level: number): React.CSSProperties => ({
+  marginLeft: `calc(${Math.max(1, level) - 1} * 3rem)`,
+});
 
 export default VFileSystemTreeNode;
