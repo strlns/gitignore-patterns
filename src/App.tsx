@@ -44,8 +44,15 @@ function App() {
           justifyContent="space-between"
           style={{ position: "fixed", top: "1rem", right: "1rem" }}
         >
-          <SquareButton icon={isDarkMode ? <Sun /> : <Moon />} onClick={switchThemes} />
-          <Link href="https://github.com/strlns/gitignore-patterns">
+          <SquareButton
+            icon={isDarkMode ? <Sun /> : <Moon />}
+            onClick={switchThemes}
+            title={`Switch to ${isDarkMode ? "light" : "dark"} mode`}
+          />
+          <Link
+            href="https://github.com/strlns/gitignore-patterns"
+            title="View on GitHub"
+          >
             <SquareButton icon={<Github />} />
           </Link>
         </Box>
