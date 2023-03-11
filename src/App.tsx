@@ -1,29 +1,16 @@
 import { CssBaseline, GeistProvider, Link, Text } from "@geist-ui/core";
+import { Github, Moon, Sun } from "@geist-ui/icons";
+import Box from "components/Atoms/Box";
+import SquareButton from "components/Atoms/SquareButton";
 import ErrorBoundaryFallback from "components/Error/ErrorBoundaryFallback";
+import useColorScheme from "hooks/useColorScheme";
 import Home from "pages/Home";
-import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { RouterProvider } from "react-router";
 import { createBrowserRouter } from "react-router-dom";
-import useMediaQuery from "hooks/useMediaQuery";
-import SquareButton from "components/Atoms/SquareButton";
-import { Github, Moon, Sun } from "@geist-ui/icons";
-import Box from "components/Atoms/Box";
 
 function App() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
-  const [themeType, setThemeType] = useState(prefersDarkMode ? "dark" : "light");
-
-  const isDarkMode = themeType === "dark";
-
-  const switchThemes = () => {
-    setThemeType((last) => (last === "dark" ? "light" : "dark"));
-  };
-
-  useEffect(() => {
-    setThemeType(prefersDarkMode ? "dark" : "light");
-  }, [prefersDarkMode]);
+  const { isDarkMode, switchThemes, themeType } = useColorScheme();
 
   const router = createBrowserRouter(
     [
