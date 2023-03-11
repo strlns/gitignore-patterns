@@ -4,16 +4,19 @@ import {
   getUniquePath,
   isPathDirectChildOfDirectory,
   normalizePath,
-  PATH_SEPARATOR,
-  ROOT_VFS_NODE,
 } from "data/PathUtilities";
+import { PATH_SEPARATOR } from "data/PATH_SEPARATOR";
+import { cloneDeep } from "lodash-es";
 import { AppState } from "types/AppState";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import { logSerialized } from "utilities/debug";
+import { ROOT_VFS_NODE } from "./ROOT_VFS_NODE";
+
 cuid2.init();
 
 const initialFiles = (): IVirtualFileSystemNode[] => {
   return [
-    ROOT_VFS_NODE,
+    cloneDeep(ROOT_VFS_NODE),
     {
       path: "/src/index.ts",
       isIgnored: false,
@@ -193,29 +196,32 @@ const createNewFileAction = (
     isDir: path.endsWith(PATH_SEPARATOR),
   };
 
-  const duplicate = state.files.find(
+  const duplicateIndex = state.files.findIndex(
     (file) => normalizePath(file.path) === normalizePath(newFileWithoutID.path)
   );
 
-  if (duplicate) {
+  const newFiles = [...state.files];
+
+  if (duplicateIndex !== -1) {
+    const duplicatePath = newFiles[duplicateIndex].path;
     const pathName = getPathName(path);
-    const siblings = state.files.filter((file) =>
+    const siblings = newFiles.filter((file) =>
       isPathDirectChildOfDirectory(file.path, pathName)
     );
     if (renameDuplicates) {
       const newPath = getUniquePath(path, siblings);
-
-      if (newPath && newPath !== duplicate.path) {
-        return createNewFileAction({ ...state, files: siblings }, newPath);
+      if (newPath && newPath !== duplicatePath) {
+        return createNewFileAction(state, newPath);
       }
       return {
         ...state,
         error: new Error("Duplicate paths are not allowed."),
       };
+    } else {
+      newFiles.splice(duplicateIndex, 1);
     }
   }
 
-  const newFiles = [...state.files];
   const newFile = {
     ...newFileWithoutID,
     id: cuid2.createId(),
@@ -223,6 +229,7 @@ const createNewFileAction = (
     isIgnored: false,
   };
   newFiles.push(newFile);
+  logSerialized(newFiles);
 
   return {
     ...state,

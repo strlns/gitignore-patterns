@@ -3,23 +3,21 @@ import {
   isPathDirectChildOfDirectory,
   isRootPath,
   normalizePath,
-  ROOT_VFS_NODE,
   sortByPathDepth,
 } from "data/PathUtilities";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
 import { logSerialized } from "utilities/debug";
 import { MAX_VFS_DEPTH } from "./AppStateReducer";
+import { ROOT_VFS_NODE } from "./ROOT_VFS_NODE";
 import { searchVFSTreeNodeByCriterion } from "./searchNodeByCriterion";
-
-const VFSTreeRootNode: VFSTreeNode = {
-  node: ROOT_VFS_NODE,
-  children: [] as VFSTreeNode[],
-};
 
 export const pathsToTree = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => {
   const nodes = sortByPathDepth(vfsNodes);
-  const tree = structuredClone(VFSTreeRootNode) as VFSTreeNode;
+  const tree = structuredClone({
+    node: ROOT_VFS_NODE,
+    children: [],
+  });
   while (nodes.length) {
     const node = nodes.pop();
     if (!node) {

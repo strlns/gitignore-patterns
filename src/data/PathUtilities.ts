@@ -1,24 +1,8 @@
-import cuid2 from "@paralleldrive/cuid2";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
+import { ROOT_PATH } from "./ROOT_VFS_NODE";
+import { PATH_SEPARATOR } from "./PATH_SEPARATOR";
 
-/*
-This is explicitly NOT configurable.
-git does not deal with other path separators by design,
-neither will I. PATH_SEPARATOR is a forward slash,
-always.
-*/
-export const PATH_SEPARATOR = "/" as const;
-
-export const ROOT_VFS_NODE: IVirtualFileSystemNode = {
-  path: PATH_SEPARATOR,
-  isDir: true,
-  readOnly: true,
-  id: cuid2.createId(),
-  createdAt: new Date(),
-  isIgnored: false,
-};
-
-export const isRootPath = (path: string) => path === ROOT_VFS_NODE.path;
+export const isRootPath = (path: string) => path === ROOT_PATH;
 
 export const isPathDirectChildOfDirectory = (
   path: string,
