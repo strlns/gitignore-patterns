@@ -10,11 +10,11 @@
     "npm": "^9"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "format": "prettier --write ./src",
     "lint": "tsc && eslint --max-warnings=0 ./src",
-    "preview": "vite preview"
+    "preview": "vite preview --host"
   },
   "dependencies": {
     "@geist-ui/core": "2.3.8",

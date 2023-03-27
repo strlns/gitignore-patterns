@@ -1,6 +1,6 @@
 import { Input } from "@geist-ui/core";
 import { Action } from "data/AppStateReducer";
-import { numberOfSlashes } from "data/PathUtilities";
+import { numberOfSlashes, removeTrailingSlash } from "data/PathUtilities";
 import { useCallback, useMemo, useRef } from "react";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
@@ -11,11 +11,17 @@ import VFileSystemNodeIcon from "./VFileSystemNodeIcon";
 interface VFileSystemTreeNodeProps extends BoxProps {
   treeNode: VFSTreeNode;
   dispatch: React.Dispatch<Action>;
+  /**indent according to tree level */
+  indent: boolean;
 }
 
 type IChangeFilePathHandler = (file: IVirtualFileSystemNode, path: string) => void;
 
-const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) => {
+const VFileSystemTreeNode = ({
+  treeNode,
+  dispatch,
+  indent = true,
+}: VFileSystemTreeNodeProps) => {
   const onChangeFilePath = useCallback<IChangeFilePathHandler>(
     (file, path) =>
       dispatch({
@@ -30,14 +36,20 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
   const { isIgnored, readOnly, path } = treeNode.node;
 
   const inlineSpacingFromTreeLevel = useMemo(() => {
-    const level = numberOfSlashes(path);
+    if (!indent) {
+      return null;
+    }
+    const level = numberOfSlashes(removeTrailingSlash(path));
     return getInlineStyleSpacingFromTreeLevel(level);
-  }, [path]);
+  }, [path, indent]);
 
-  const styles = {
-    ...inlineSpacingFromTreeLevel,
-    opacity: treeNode.node.isIgnored ? 0.25 : 1,
-  };
+  const styles = useMemo(
+    () => ({
+      ...inlineSpacingFromTreeLevel,
+      opacity: treeNode.node.isIgnored ? 0.25 : 1,
+    }),
+    [inlineSpacingFromTreeLevel, treeNode.node.isIgnored]
+  );
 
   return (
     <Box gap={2} style={styles}>
@@ -80,7 +92,12 @@ const VFileSystemTreeNode = ({ treeNode, dispatch }: VFileSystemTreeNodeProps) =
         {isIgnored && "IGNORED"}
       </Box>
       {treeNode.children.map((child) => (
-        <VFileSystemTreeNode treeNode={child} key={child.node.id} dispatch={dispatch} />
+        <VFileSystemTreeNode
+          treeNode={child}
+          key={child.node.id}
+          dispatch={dispatch}
+          indent={indent}
+        />
       ))}
     </Box>
   );

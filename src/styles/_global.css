@@ -6,8 +6,15 @@
   --icon-size: calc(1.75 * var(--unit));
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 :root section:first-child {
   min-height: 0;
+  flex-grow: 1;
 }
 
 :root main {

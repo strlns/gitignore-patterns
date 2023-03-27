@@ -4,6 +4,8 @@ import {
   getUniquePath,
   isPathDirectChildOfDirectory,
   normalizePath,
+  normalizePathSeparators,
+  sanitizeFileName,
 } from "data/PathUtilities";
 import { PATH_SEPARATOR } from "data/PATH_SEPARATOR";
 import { cloneDeep } from "lodash-es";
@@ -74,7 +76,11 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       if (indexOfFileToChange === -1) {
         throw new Error(`Cannot change file with ID  ${action.payload.id}.`);
       }
-      const fileToChange = { ...newFiles[indexOfFileToChange] };
+
+      let fileToChange = newFiles[indexOfFileToChange];
+      fileToChange.path = path;
+      fileToChange = sanitizePath(fileToChange);
+
       const isDuplicate =
         newFiles.filter((node) => node.path === path && node.id !== id).length > 0;
       //If renaming leads to duplicates, remove one of the duplicated paths.
@@ -89,7 +95,6 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       //Except for the root path, to make typing less annoying.
       fileToChange.duplicate = isDuplicate;
 
-      fileToChange.path = path;
       fileToChange.isDir = fileToChange.path.endsWith(PATH_SEPARATOR);
       newFiles[indexOfFileToChange] = fileToChange;
 
@@ -132,10 +137,21 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
   }
 };
 
-/*
-To do: handle directories properly, implement:
-- deletion of file/directory
-*/
+const sanitizePath = (node: IVirtualFileSystemNode): IVirtualFileSystemNode => {
+  const path = normalizePathSeparators(node.path);
+  const sanitizedPath = sanitizeFileName(path, (illegalChar) => {
+    if (illegalChar === PATH_SEPARATOR || illegalChar === " ") {
+      return illegalChar;
+    }
+    return `\\${illegalChar}`;
+  });
+  return {
+    ...node,
+    path: sanitizedPath,
+    isInvalid: sanitizedPath.includes("\\"),
+  };
+};
+
 export type Action =
   | {
       //also covers directories. maybe rename action.
@@ -222,12 +238,12 @@ const createNewFileAction = (
     }
   }
 
-  const newFile = {
+  const newFile = sanitizePath({
     ...newFileWithoutID,
     id: cuid2.createId(),
     createdAt: new Date(),
     isIgnored: false,
-  };
+  });
   newFiles.push(newFile);
   logSerialized(newFiles);
 

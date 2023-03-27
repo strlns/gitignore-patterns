@@ -12,6 +12,7 @@ export interface IVirtualFileSystemNode {
   id: string;
   createdAt: Date;
   isIgnored: boolean;
+  isInvalid?: boolean;
 }
 
 export interface Directory extends IVirtualFileSystemNode {

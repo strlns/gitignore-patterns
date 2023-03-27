@@ -69,7 +69,7 @@ export const getPathName = (path: string): string => {
 };
 
 export const normalizePath = (path: string): string =>
-  ensureLeadingSlash(normalizePathSeparators(path.trim()));
+  ensureLeadingSlash(normalizePathSeparators(path.replace(/^\w+/, "")));
 
 export const getUniquePath = (
   name = "file",
@@ -97,7 +97,10 @@ export const getUniquePath = (
 };
 
 export const sortFnByNumberOfSlashes = (pathA: string, pathB: string) => {
-  const [a, b] = [numberOfSlashes(pathA), numberOfSlashes(pathB)];
+  const [a, b] = [
+    numberOfSlashes(removeTrailingSlash(pathA)),
+    numberOfSlashes(removeTrailingSlash(pathB)),
+  ];
   return a - b;
 };
 
@@ -113,3 +116,44 @@ export const sortByPathDepth = (nodes: IVirtualFileSystemNode[], reverse = false
 
   return nodes.slice().sort(sortFunction);
 };
+
+type Replacement = Parameters<typeof String.prototype.replace>[1];
+
+/**
+ * Reuses parts from https://github.com/parshap/node-sanitize-filename
+ *
+ * Removed 255 character length restriction, this is irrelevant here.
+ *
+ * Note that technically, only / is forbidden in linux file names.
+ * Asteriks, question marks and the like cause trouble in shells,
+ * but can be part of a filename.
+ * Anyway, they are escaped with a backslash here just for funsies.
+ *
+ * Spaces cause trouble in shells too, but are NOT escaped here,
+ * for better readibility.
+ *
+ * Illegal Characters on Various Operating Systems
+ * / ? < > \ : * | "
+ * https://kb.acronis.com/content/39790
+ *
+ * Unicode Control codes
+ * C0 0x00-0x1f & C1 (0x80-0x9f)
+ * http://en.wikipedia.org/wiki/C0_and_C1_control_codes
+ *
+ */
+export function sanitizeFileName(path: string, replacement: Replacement): string {
+  let name = filename(path);
+  //remove double backslashes at the begining to avoid issues with repeated application (is this idempotent? i guess not.)
+  name = name.replaceAll("\\\\", "");
+  const illegalRe = /[/?<>:*|"]/g;
+  // eslint-disable-next-line no-control-regex
+  const controlRe = /[\x00-\x1f\x80-\x9f]/g;
+  const reservedRe = /^\.+$/;
+
+  name = name
+    .replace(illegalRe, replacement)
+    .replace(controlRe, replacement)
+    .replace(reservedRe, replacement);
+
+  return path.replace(/(?:\/)[^/]*$/, `/${name}`);
+}
