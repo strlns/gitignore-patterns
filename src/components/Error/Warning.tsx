@@ -14,7 +14,7 @@ const Warning = ({ error, onClear }: WarningProps) => {
   const action: ToastAction = {
     name: "cancel",
     passive: true,
-    handler: (event, cancel) => {
+    handler: (_event, cancel) => {
       cancel();
       onClear && onClear();
     },

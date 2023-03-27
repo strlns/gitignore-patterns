@@ -1,4 +1,4 @@
-import { Card, Text, Page } from "@geist-ui/core";
+import { Page, Text } from "@geist-ui/core";
 import Warning from "components/Error/Warning";
 import PatternEditor from "components/PatternEditor";
 import VFileSystemEditor from "components/VFileSystemEditor";
@@ -23,31 +23,11 @@ function Home() {
   return (
     <Page width="800px">
       <Text h1>Validate .gitignore patterns</Text>
-      <Card mb={1}>
-        <Card.Content py={0}>
-          <Text h3 mb={0}>
-            .gitignore
-          </Text>
-        </Card.Content>
-        {error && (
-          <Card.Content py={0}>
-            <Warning error={error} onClear={() => dispatch({ type: "clearError" })} />
-          </Card.Content>
-        )}
-        <Card.Body>
-          <PatternEditor patterns={patterns} dispatch={dispatch} />
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Content py={0}>
-          <Text h3 mb={0}>
-            Your files
-          </Text>
-        </Card.Content>
-        <Card.Body>
-          <VFileSystemEditor tree={tree} dispatch={dispatch} />
-        </Card.Body>
-      </Card>
+      {error && (
+        <Warning error={error} onClear={() => dispatch({ type: "clearError" })} />
+      )}
+      <PatternEditor patterns={patterns} dispatch={dispatch} />
+      <VFileSystemEditor dispatch={dispatch} tree={tree} />
     </Page>
   );
 }

@@ -1,13 +1,15 @@
-import { defineConfig } from "vite";
+import { ConfigEnv, UserConfigExport } from "vite";
 import react from "@vitejs/plugin-react";
 import postcssPresetEnvPlugin from "postcss-preset-env";
 import tsconfigPaths from "vite-tsconfig-paths";
 import eslintPlugin from "vite-plugin-eslint";
 import postcssNestingPlugin from "postcss-nesting";
 
-// https://vitejs.dev/config/
-export default defineConfig({
+const config = ({ mode }: ConfigEnv): UserConfigExport => ({
   base: "/gitignore-patterns/",
+  define: {
+    __IS_DEV__: mode === "development",
+  },
   plugins: [react(), tsconfigPaths(), eslintPlugin()],
   css: {
     postcss: {
@@ -15,3 +17,5 @@ export default defineConfig({
     },
   },
 });
+
+export default config;

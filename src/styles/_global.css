@@ -1,0 +1,19 @@
+:root {
+  --unit: 1rem;
+  --gap-unit: 0.25rem;
+  --gap: 4;
+  --gap-value: calc(var(--gap-unit) * var(--gap));
+  --icon-size: calc(1.75 * var(--unit));
+}
+
+:root section:first-child {
+  min-height: 0;
+}
+
+:root main {
+  padding-bottom: var(--unit) !important;
+}
+
+.gap {
+  gap: calc(var(--gap) * var(--gap-unit));
+}
