@@ -1,4 +1,4 @@
-import { PartialBy } from "./UtilityTypes";
+import { PartialBy } from "types/UtilityTypes";
 
 export interface IVirtualFileSystemNode {
   path: string;

@@ -1,6 +1,6 @@
 import { MAX_VFS_DEPTH } from "data/AppStateReducer";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { VFSTreeNode } from "./VFSTreeNode";
+import { VFSTreeNode } from "data/VFSTreeNode";
 
 /**
  * Expensive and hopefully not needed too often.

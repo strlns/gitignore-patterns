@@ -1,6 +1,6 @@
 import { Sun, Moon } from "@geist-ui/icons";
 import useColorScheme from "hooks/useColorScheme";
-import SquareButton from "./Atoms/SquareButton";
+import SquareButton from "components/Atoms/SquareButton";
 
 export default function DarkModeSwitch() {
   const { isDarkMode, switchThemes } = useColorScheme();

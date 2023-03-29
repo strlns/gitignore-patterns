@@ -1,14 +1,14 @@
 import { Toggle } from "@geist-ui/core";
+import Box from "components/Atoms/Box";
+import VFileSystemTreeNode from "components/VFileSystemEditor/Node/VFileSystemTreeNode";
 import { VFSTreeNode } from "data/VFSTreeNode";
 import useThemeUnit from "hooks/useUnit";
 import { useState } from "react";
-import { Action } from "../data/AppStateReducer";
-import Box from "./Atoms/Box";
-import VFileSystemTreeNode from "./VFileSystemTreeNode";
+import { Dispatch } from "types/AppState";
 
 type VFileSystemTreeProps = {
   tree: VFSTreeNode;
-  dispatch: React.Dispatch<Action>;
+  dispatch: Dispatch;
   indent?: boolean;
 };
 
@@ -19,7 +19,12 @@ const VFileSystemTree = ({ tree, dispatch }: VFileSystemTreeProps) => {
 
   return (
     <Box>
-      <Box horizontal tagName="label" alignItems="center" style={{ marginBottom: unit }}>
+      <Box
+        horizontal
+        tagName="label"
+        alignItems="center"
+        style={{ marginBottom: unit, cursor: "pointer", fontSize: "var(--font-size-sm)" }}
+      >
         <Toggle
           initialChecked={isIndented}
           checked={isIndented}

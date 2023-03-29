@@ -26,10 +26,12 @@ export type BoxProps<T extends TagName = "div"> = {
   alignItems?: React.CSSProperties["alignItems"];
   justifyContent?: React.CSSProperties["justifyContent"];
   tagName?: T;
+  childrenCanShrink?: boolean;
 } & React.HTMLAttributes<HTMLElementTagNameMap[T]>;
 
 const Box = ({
   children,
+  childrenCanShrink = false,
   horizontal = false,
   gap = 2,
   flexWrap,
@@ -51,10 +53,10 @@ const Box = ({
   alignItems && (styles.alignItems = alignItems);
   justifyContent && (styles.justifyContent = justifyContent);
   flexWrap && (styles.flexWrap = flexWrap);
-
   const mergedClassName = clsx(
     boxStyles.box,
     horizontal && boxStyles.h,
+    childrenCanShrink && boxStyles.shrink,
     //This is exhaustively type-checked when using the workspace TypeScript version with
     //typescript-plugin-css-modules. Otherwise this line will cause a TS error.
     gapStyles[`g-${gap}`],

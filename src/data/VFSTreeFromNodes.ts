@@ -8,9 +8,9 @@ import {
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { VFSTreeNode } from "types/VFSTreeNode";
 import { logSerialized } from "utilities/debug";
-import { MAX_VFS_DEPTH } from "./AppStateReducer";
-import { ROOT_VFS_NODE } from "./ROOT_VFS_NODE";
-import { searchVFSTreeNodeByCriterion } from "./searchNodeByCriterion";
+import { MAX_VFS_DEPTH } from "data/AppStateReducer";
+import { ROOT_VFS_NODE } from "data/ROOT_VFS_NODE";
+import { searchVFSTreeNodeByCriterion } from "data/searchNodeByCriterion";
 
 export const pathsToTree = (vfsNodes: IVirtualFileSystemNode[]): VFSTreeNode => {
   const nodes = sortByPathDepth(vfsNodes);

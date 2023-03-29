@@ -1,0 +1,14 @@
+:root {
+  & .comment {
+    &,
+    & :global(input) {
+      color: #555;
+    }
+  }
+  &:global(.dark) .comment {
+    &,
+    & :global(input) {
+      color: #999;
+    }
+  }
+}

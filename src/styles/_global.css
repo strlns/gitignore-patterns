@@ -4,6 +4,7 @@
   --gap: 4;
   --gap-value: calc(var(--gap-unit) * var(--gap));
   --icon-size: calc(1.75 * var(--unit));
+  --font-size-sm: 0.875em;
 }
 
 #root {

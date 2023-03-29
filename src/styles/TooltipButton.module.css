@@ -1,0 +1,10 @@
+:root .btn {
+  &,
+  & :global(.icon) {
+    color: currentColor !important;
+  }
+  border-style: none !important;
+  padding: 0 !important;
+  height: auto !important;
+  margin: 0.125ex 0.75ex !important;
+}

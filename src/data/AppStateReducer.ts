@@ -12,7 +12,7 @@ import { cloneDeep } from "lodash-es";
 import { AppState } from "types/AppState";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import { logSerialized } from "utilities/debug";
-import { ROOT_VFS_NODE } from "./ROOT_VFS_NODE";
+import { ROOT_VFS_NODE } from "data/ROOT_VFS_NODE";
 
 cuid2.init();
 

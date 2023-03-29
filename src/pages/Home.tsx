@@ -1,7 +1,7 @@
 import { Page, Text } from "@geist-ui/core";
 import Warning from "components/Error/Warning";
-import PatternEditor from "components/PatternEditor";
-import VFileSystemEditor from "components/VFileSystemEditor";
+import PatternEditor from "components/PatternEditor/PatternEditor";
+import VFileSystemEditor from "components/VFileSystemEditor/VFileSystemEditor";
 import { appStateReducer, initialState } from "data/AppStateReducer";
 import { processGitignore } from "data/processGitignore";
 import { pathsToTree } from "data/VFSTreeFromNodes";
@@ -21,7 +21,7 @@ function Home() {
   const { patterns, error } = state;
 
   return (
-    <Page width="800px">
+    <Page width="min(100%, 800px)">
       <Text h1>Validate .gitignore patterns</Text>
       {error && (
         <Warning error={error} onClear={() => dispatch({ type: "clearError" })} />

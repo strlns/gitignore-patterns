@@ -1,7 +1,7 @@
 import { FilePlus, Trash, FolderPlus } from "@geist-ui/icons";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import Box from "./Atoms/Box";
-import SquareButton from "./Atoms/SquareButton";
+import Box from "components/Atoms/Box";
+import SquareButton from "components/Atoms/SquareButton";
 
 type VFileSystemNodeActionProps = {
   onAddChild: (parentPath: string) => void;

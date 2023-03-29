@@ -1,16 +1,21 @@
 .box {
   display: flex;
   flex-direction: column;
-  /*Custom property currently has no real value here,
-  but maybe it could be useful to inherit the gap
-  value down the DOM tree in the future.*/
+  max-width: 100%;
   --gap: 4;
-  composes: gap from global;
   & > * {
     max-width: 100%;
     flex: 0 0 auto;
   }
-  &.h {
-    flex-direction: row;
+  &.shrink > * {
+    flex-shrink: 1;
   }
+}
+
+.h {
+  flex-direction: row;
+}
+
+.box {
+  composes: gap from global;
 }

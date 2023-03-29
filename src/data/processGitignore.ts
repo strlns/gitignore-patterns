@@ -1,6 +1,6 @@
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 import ignore from "ignore";
-import { removeLeadingSlash } from "./PathUtilities";
+import { removeLeadingSlash } from "data/PathUtilities";
 
 export const processGitignore = (
   nodes: IVirtualFileSystemNode[],

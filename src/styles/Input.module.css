@@ -1,0 +1,12 @@
+:root :global(.with-label):has(.wrap.full) {
+  &,
+  & :global(.input-container, .input-wrapper),
+  .wrap {
+    width: 100%;
+  }
+  &,
+  & input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

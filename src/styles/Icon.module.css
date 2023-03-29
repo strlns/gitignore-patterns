@@ -2,6 +2,13 @@
   width: var(--icon-size);
   height: var(--icon-size);
 }
+.small {
+  --icon-size: 1.5em;
+}
+:root .icon,
+:root * .icon {
+  flex-shrink: 0;
+}
 .icon:global(svg.icon) {
   width: var(--icon-size);
   height: var(--icon-size);

@@ -1,4 +1,4 @@
-import { AlertTriangle, File, Folder } from "@geist-ui/icons";
+import { AlertTriangle, File, Folder, XSquare } from "@geist-ui/icons";
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
 
 type VFileSystemNodeIconProps = {
@@ -6,8 +6,10 @@ type VFileSystemNodeIconProps = {
 };
 
 const VFileSystemNodeIcon = ({ node }: VFileSystemNodeIconProps) => {
-  if (node.duplicate) {
+  if (node.duplicate || node.isInvalid) {
     return <AlertTriangle />;
+  } else if (node.isIgnored) {
+    return <XSquare />;
   } else if (node.isDir) {
     return <Folder />;
   } else {

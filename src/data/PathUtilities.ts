@@ -1,6 +1,6 @@
 import { IVirtualFileSystemNode } from "types/IVirtualFileSystemNode";
-import { ROOT_PATH } from "./ROOT_VFS_NODE";
-import { PATH_SEPARATOR } from "./PATH_SEPARATOR";
+import { ROOT_PATH } from "data/ROOT_VFS_NODE";
+import { PATH_SEPARATOR } from "data/PATH_SEPARATOR";
 
 export const isRootPath = (path: string) => path === ROOT_PATH;
 

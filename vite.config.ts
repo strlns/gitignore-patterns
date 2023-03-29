@@ -4,6 +4,7 @@ import postcssPresetEnvPlugin from "postcss-preset-env";
 import tsconfigPaths from "vite-tsconfig-paths";
 import eslintPlugin from "vite-plugin-eslint";
 import postcssNestingPlugin from "postcss-nesting";
+import postcssHasPseudoPolyfill from "css-has-pseudo";
 
 const config = ({ mode }: ConfigEnv): UserConfigExport => ({
   base: "/gitignore-patterns/",
@@ -13,7 +14,11 @@ const config = ({ mode }: ConfigEnv): UserConfigExport => ({
   plugins: [react(), tsconfigPaths(), eslintPlugin()],
   css: {
     postcss: {
-      plugins: [postcssPresetEnvPlugin(), postcssNestingPlugin],
+      plugins: [
+        postcssPresetEnvPlugin(),
+        postcssNestingPlugin,
+        postcssHasPseudoPolyfill(),
+      ],
     },
   },
 });
