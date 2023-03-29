@@ -4,9 +4,10 @@
   "trailingComma": "es5",
   "overrides": [
     {
-      "files": "tailwind.config.cjs",
+      "files": ["README.md"],
       "options": {
-        "printWidth": 120
+        "printWidth": 80,
+        "proseWrap": "always"
       }
     }
   ]

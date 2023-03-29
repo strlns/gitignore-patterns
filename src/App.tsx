@@ -1,5 +1,6 @@
 import { CssBaseline, GeistProvider } from "@geist-ui/core";
 import ErrorBoundaryFallback from "components/Error/ErrorBoundaryFallback";
+import RouteError from "components/Error/RouteError";
 import BottomBar from "components/Layout/BottomBar";
 import useColorScheme from "hooks/useColorScheme";
 import Home from "pages/Home";
@@ -16,6 +17,7 @@ function App() {
       {
         path: "/",
         element: <Home />,
+        errorElement: <RouteError />,
       },
     ],
     { basename: "/gitignore-patterns/" }

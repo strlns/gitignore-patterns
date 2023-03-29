@@ -19,8 +19,8 @@
   "dependencies": {
     "@geist-ui/core": "2.3.8",
     "@geist-ui/icons": "1.0.2",
-    "@gerhobbelt/gitignore-parser": "0.2.0-9",
     "@paralleldrive/cuid2": "2.2.0",
+    "ignore": "^5.2.4",
     "lodash-es": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
